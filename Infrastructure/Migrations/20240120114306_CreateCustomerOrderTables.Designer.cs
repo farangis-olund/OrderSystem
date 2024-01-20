@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CustomerOrderContext))]
-    [Migration("20240120110611_AddCustomerOrderTables")]
-    partial class AddCustomerOrderTables
+    [Migration("20240120114306_CreateCustomerOrderTables")]
+    partial class CreateCustomerOrderTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
