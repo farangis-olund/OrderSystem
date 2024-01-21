@@ -1,11 +1,13 @@
-﻿
+﻿using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
 
-public abstract class BaseRepository<TContext, TEntity> where TContext : DbContext where TEntity : class  
+public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntity> 
+    where TContext : DbContext where TEntity : class
 {
     protected readonly TContext _context;
     protected readonly ILogger<BaseRepository<TContext, TEntity>> _logger;
@@ -13,10 +15,10 @@ public abstract class BaseRepository<TContext, TEntity> where TContext : DbConte
     protected BaseRepository(TContext context, ILogger<BaseRepository<TContext, TEntity>> logger)
     {
         _context = context;
-        _logger = logger;   
+        _logger = logger;
     }
 
-    public virtual async Task<bool> AddAsync(TEntity entity)
+    public virtual async Task<TEntity> AddAsync(TEntity entity)
     {
         try
         {
@@ -24,13 +26,13 @@ public abstract class BaseRepository<TContext, TEntity> where TContext : DbConte
             await _context.SaveChangesAsync();
 
             _logger.LogInformation($"Entity of type {typeof(TEntity).Name} added successfully.");
-            return true;
+            return entity;
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error adding entity of type {typeof(TEntity).Name}: {ex.Message}");
             Debug.WriteLine(ex.Message);
-            return false;
+            return null!;
         }
 
     }
@@ -49,17 +51,46 @@ public abstract class BaseRepository<TContext, TEntity> where TContext : DbConte
         }
     }
 
-    public virtual async Task<TEntity?> GetByIdAsync(object id)
+    public virtual async Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate, Func<Task<TEntity>> createIfNotFound)
     {
         try
         {
-            return await _context.Set<TEntity>().FindAsync(id);
+            var entity = await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+
+            if (entity == null)
+            {
+                entity = await createIfNotFound.Invoke();
+                _context.Set<TEntity>().Add(entity);
+            }
+
+            return entity;
+
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error getting entity of type {typeof(TEntity).Name} by id: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return null;
+        }
+    }
+
+    public virtual async Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> predicate)
+    {
+        try
+        {
+            var entity = await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            if (entity != null)
+            {
+                return entity;
+            }
+            return null!;
+        
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting entity of type {typeof(TEntity).Name} by id: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return null!;
         }
     }
 
@@ -81,21 +112,21 @@ public abstract class BaseRepository<TContext, TEntity> where TContext : DbConte
         }
     }
 
-    public virtual async Task<bool> RemoveAsync(object id)
+    public virtual async Task<bool> RemoveAsync(Expression<Func<TEntity, bool>> predicate)
     {
         try
         {
-            var entity = await _context.Set<TEntity>().FindAsync(id);
+            var entity = await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
             if (entity == null)
             {
-                _logger.LogWarning($"Entity of type {typeof(TEntity).Name} with id {id} not found.");
+                _logger.LogWarning($"Entity of type {typeof(TEntity).Name} with data {predicate} not found.");
                 return false;
             }
 
             _context.Set<TEntity>().Remove(entity);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Entity of type {typeof(TEntity).Name} with id {id} removed successfully.");
+            _logger.LogInformation($"Entity of type {typeof(TEntity).Name} with data {predicate} removed successfully.");
             return true;
         }
         catch (Exception ex)
@@ -106,5 +137,18 @@ public abstract class BaseRepository<TContext, TEntity> where TContext : DbConte
         }
     }
 
+    public virtual async Task<bool> Exist(Expression<Func<TEntity, bool>> predicate)
+    {
+        try
+        {
+            return await _context.Set<TEntity>().AnyAsync(predicate);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error checking existence of entity of type {typeof(TEntity).Name}: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return false;
+        }
+    }
 
 }

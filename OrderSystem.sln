@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Presentation.wpf", "Present
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{07AC7DC6-4F95-4DB5-A2F2-439CC0FE1109}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextConsole", "TextConsole\TextConsole.csproj", "{4133DC9D-98E1-46FC-9BA0-F07FFF550725}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{07AC7DC6-4F95-4DB5-A2F2-439CC0FE1109}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07AC7DC6-4F95-4DB5-A2F2-439CC0FE1109}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07AC7DC6-4F95-4DB5-A2F2-439CC0FE1109}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4133DC9D-98E1-46FC-9BA0-F07FFF550725}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4133DC9D-98E1-46FC-9BA0-F07FFF550725}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4133DC9D-98E1-46FC-9BA0-F07FFF550725}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4133DC9D-98E1-46FC-9BA0-F07FFF550725}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
