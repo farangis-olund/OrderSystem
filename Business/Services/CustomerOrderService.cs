@@ -1,4 +1,4 @@
-﻿using Business.Dtos;
+﻿using Shared.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
@@ -21,12 +21,12 @@ namespace Business.Services
             _logger = logger;
         }
 
-        public async Task<CustomerOrderEntity?> AddCustomerOrder(CustomerOrder customerOrder)
+        public async Task<CustomerOrderEntity?> AddCustomerOrder(CustomerOrder customerOrder, Customer customer)
         {
             try
             {
-                var existingCustomer = await _customerService.GetCustomer(customerOrder.Customer) 
-                    ?? await _customerService.AddCustomer(customerOrder.Customer);
+                var existingCustomer = await _customerService.GetCustomer(customer.Email) 
+                    ?? await _customerService.AddCustomer(customer);
 
                 if (existingCustomer == null)
                 {
@@ -34,22 +34,14 @@ namespace Business.Services
                     return null;
                 }
 
-                var customerOrderExists = await _customerOrderRepository.Exist(co => co.Id == customerOrder.Id && co.CustomerId == existingCustomer.Id);
-
-                if (!customerOrderExists)
+                var newCustomerOrder = new CustomerOrderEntity
                 {
-                    var newCustomerOrder = new CustomerOrderEntity
-                    {
-                        TotalAmount = customerOrder.TotalAmount,
-                        Date = customerOrder.Date,
-                        Customer = existingCustomer
-                    };
+                    TotalAmount = customerOrder.TotalAmount,
+                    Date = customerOrder.Date,
+                    Customer = existingCustomer
+                };
                     
-                    return await _customerOrderRepository.AddAsync(newCustomerOrder);
-                }
-
-                _logger.LogError($"Info: Customer order already exists");
-                return null;
+                return await _customerOrderRepository.AddAsync(newCustomerOrder);
             }
             catch (Exception ex)
             {
@@ -59,22 +51,7 @@ namespace Business.Services
             }
         }
 
-
-        public async Task<CustomerOrderEntity?> GetCustomerOrder(CustomerOrder customerOrder)
-        {
-            try
-            {
-                return await _customerOrderRepository.GetOneAsync(co => co.Id == customerOrder.Id && 
-                                                co.CustomerId == customerOrder.CustomerId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error in adding customer order: {ex.Message}");
-                Debug.WriteLine(ex.Message);
-                return null;
-            }
-        }
-        public async Task<CustomerOrderEntity?> GetCustomerOrderById(int id)
+        public async Task<CustomerOrderEntity> GetCustomerOrderById(int id)
         {
             try
             {
@@ -84,7 +61,50 @@ namespace Business.Services
             {
                 _logger.LogError($"Error in adding customer order: {ex.Message}");
                 Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<CustomerOrderEntity?> UpdateCustomerOrder(int id, CustomerOrder customerOrder)
+        {
+            try
+            {
+                var existingCustomerOrder = await _customerOrderRepository.Exist(co => co.Id == id);
+                if (existingCustomerOrder)
+                {
+                    return await _customerOrderRepository.UpdateAsync(customerOrder);
+                }
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in adding customer order: {ex.Message}");
+                Debug.WriteLine(ex.Message);
                 return null;
+            }
+        }
+
+        public async Task<bool> DeleteCustomerOrder(CustomerOrder customerOrder)
+        {
+            try
+            {
+              
+                var existingCustomerOrder = await _customerOrderRepository.Exist(x => x.Equals(customerOrder));
+
+                if (existingCustomerOrder)
+                {
+                    await _customerOrderRepository.RemoveAsync(customerOrder);
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in adding customer order: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return false;
             }
         }
     }

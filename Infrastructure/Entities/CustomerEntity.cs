@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Infrastructure.Dtos;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Infrastructure.Entities;
@@ -22,6 +23,17 @@ public class CustomerEntity
 
     [Column(TypeName = "varchar(10)")]
     public string? PhoneNumber { get; set; }
-
     public virtual ICollection<CustomerOrderEntity> CustomerOrders { get; set; } = new HashSet<CustomerOrderEntity>();
+
+    public static implicit operator CustomerEntity(Customer customer)
+    {
+        return new CustomerEntity
+        {
+            FirstName = customer.FirstName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            PhoneNumber = customer.PhoneNumber
+        };
+    }
+
 }

@@ -44,7 +44,7 @@ public class SizeRepository : BaseRepository<ProductDataContext, SizeEntity>
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<bool> UpdateAsync(SizeEntity entity)
+    public override Task<SizeEntity> UpdateAsync(SizeEntity entity)
     {
         return base.UpdateAsync(entity);
     }

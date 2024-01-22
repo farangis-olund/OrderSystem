@@ -44,7 +44,7 @@ public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderD
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<bool> UpdateAsync(OrderDetailEntity entity)
+    public override Task<OrderDetailEntity> UpdateAsync(OrderDetailEntity entity)
     {
         return base.UpdateAsync(entity);
     }

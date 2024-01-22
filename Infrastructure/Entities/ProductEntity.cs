@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Dtos;
 
 namespace Infrastructure.Entities;
 
@@ -34,4 +33,18 @@ public partial class ProductEntity
 
     [InverseProperty("ArticleNumberNavigation")]
     public virtual ICollection<ProductVariantEntity> ProductVariantEntities { get; set; } = new List<ProductVariantEntity>();
+
+    public static implicit operator ProductEntity(Product product)
+    {
+        return new ProductEntity
+        {
+            ArticleNumber = product.ArticleNumber,
+            ProductName = product.ProductName,
+            Material = product.Material,
+            ProductInfo = product.ProductInfo,
+            CategoryId = product.CategoryId,
+            BrandId = product.BrandId
+
+        };
+    }
 }

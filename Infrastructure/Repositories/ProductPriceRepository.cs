@@ -44,7 +44,7 @@ public class ProductPriceRepository : BaseRepository<ProductDataContext, Product
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<bool> UpdateAsync(ProductPriceEntity entity)
+    public override Task<ProductPriceEntity> UpdateAsync(ProductPriceEntity entity)
     {
         return base.UpdateAsync(entity);
     }

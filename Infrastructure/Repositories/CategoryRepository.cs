@@ -32,12 +32,17 @@ public class CategoryRepository : BaseRepository<ProductDataContext, CategoryEnt
         return base.GetOneAsync(predicate);
     }
 
+    public override Task<CategoryEntity?> GetOneAsync(Expression<Func<CategoryEntity, bool>> predicate, Func<Task<CategoryEntity>> createIfNotFound)
+    {
+        return base.GetOneAsync(predicate, createIfNotFound);
+    }
+
     public override Task<bool> RemoveAsync(Expression<Func<CategoryEntity, bool>> predicate)
     {
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<bool> UpdateAsync(CategoryEntity entity)
+    public override Task<CategoryEntity> UpdateAsync(CategoryEntity entity)
     {
         return base.UpdateAsync(entity);
     }

@@ -1,4 +1,4 @@
-﻿using Business.Dtos;
+﻿using Shared.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
@@ -24,33 +24,33 @@ namespace Business.Services
             _logger = logger;
         }
 
-        public async Task<OrderDetailEntity?> AddOrderDetail(OrderDetail orderDetail)
+        public async Task<OrderDetailEntity?> AddOrderDetail(OrderDetail orderDetail, int customerOrderId, int productVariantId)
         {
             try
             {
-                var existingCustomerOrder = await _customerOrderService.GetCustomerOrder(orderDetail.CustomerOrder)
-                    ?? await _customerOrderService.AddCustomerOrder(orderDetail.CustomerOrder);
+                var existingCustomerOrder = await _customerOrderService.GetCustomerOrderById(customerOrderId);
 
-                var existingProductVariant = await _productVariantService.GetProductVariant(orderDetail.ProductVariant)
-                   ?? await _productVariantService.AddProductVariant(orderDetail.ProductVariant);
-
-                var orderDetailExists = await _orderDetailRepository.Exist(
-                            od => od.CustomerOrderId == orderDetail.CustomerOrder.Id && 
-                            od.ProductVariantId == orderDetail.ProductVariant.Id);
-
-                if (!orderDetailExists)
+                var existingProductVariant = await _productVariantService.GetProductVariantById(productVariantId);
+                
+                if(existingCustomerOrder != null &&  existingProductVariant != null)
                 {
-                    var newOrderDetail = new OrderDetailEntity
+                    var orderDetailExists = await _orderDetailRepository.Exist(
+                            od => od.CustomerOrderId == existingCustomerOrder.Id &&
+                            od.ProductVariantId == existingProductVariant.Id);
+
+                    if (!orderDetailExists)
                     {
-                        CustomerOrderId = orderDetail.CustomerOrder.Id, 
-                        ProductVariantId = orderDetail.ProductVariant.Id,
-                        Quantity = orderDetail.Quantity
-                };
+                        var newOrderDetail = new OrderDetailEntity
+                        {
+                            CustomerOrderId = existingCustomerOrder.Id,
+                            ProductVariantId = existingProductVariant.Id,
+                            Quantity = orderDetail.Quantity
+                        };
 
-                    return await _orderDetailRepository.AddAsync(newOrderDetail);
-                }
-
-                _logger.LogError($"Info: Customer order already exists");
+                        return await _orderDetailRepository.AddAsync(newOrderDetail);
+                    }
+                }  
+                
                 return null;
             }
             catch (Exception ex)
@@ -58,6 +58,101 @@ namespace Business.Services
                 _logger.LogError($"Error in adding customer order: {ex.Message}");
                 Debug.WriteLine(ex.Message);
                 return null;
+            }
+        }
+
+        public async Task<OrderDetailEntity> GetOrderDetail(OrderDetail orderDetail)
+        {
+
+            try
+            {
+                var existingOrderDetail = await _orderDetailRepository.GetOneAsync(x => x.Equals(orderDetail));
+
+                if (existingOrderDetail != null)
+                {
+                    return existingOrderDetail;
+                }
+                else
+                {
+                    Debug.WriteLine("Order detail does not exist!");
+                    return null!;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in geting Order detail: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<OrderDetailEntity> GetOrderDetail(int id)
+        {
+
+            try
+            {
+                var existingOrderDetail = await _orderDetailRepository.GetOneAsync(c => c.OrderDetailId == id);
+
+                if (existingOrderDetail != null)
+                {
+                    return existingOrderDetail;
+                }
+                else
+                {
+                    Debug.WriteLine("Order detail does not exist!");
+                    return null!;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in geting Order detail: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<OrderDetailEntity?> UpdateOrderDetail(OrderDetail orderDetail)
+        {
+            try
+            {
+                var existingOrderDetail = await _orderDetailRepository.Exist(x => x.Equals(orderDetail));
+                if (existingOrderDetail)
+                {
+                    return await _orderDetailRepository.UpdateAsync(orderDetail);
+                }
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in updating Order detail: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteOrderDetail(OrderDetail orderDetail)
+        {
+            try
+            {
+
+                var existingOrderDetail = await _orderDetailRepository.Exist(x => x.Equals(orderDetail));
+
+                if (existingOrderDetail)
+                {
+                    await _orderDetailRepository.RemoveAsync(orderDetail);
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in deleting Order detail: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return false;
             }
         }
     }

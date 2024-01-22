@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure.Dtos;
 
 namespace Infrastructure.Entities;
 
@@ -25,4 +26,15 @@ public partial class ProductImageEntity
     [ForeignKey("ProductVariantId")]
     [InverseProperty("ProductImageEntities")]
     public virtual ProductVariantEntity ProductVariant { get; set; } = null!;
+
+    public static implicit operator ProductImageEntity(ProductImage productImage)
+    {
+        return new ProductImageEntity
+        {
+           ProductVariantId = productImage.ProductVariantId,
+           ArticleNumber = productImage.ArticleNumber,
+           ImageId = productImage.ImageId
+
+        };
+    }
 }

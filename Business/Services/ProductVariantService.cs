@@ -1,4 +1,4 @@
-﻿using Business.Dtos;
+﻿using Shared.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
@@ -32,7 +32,7 @@ public class ProductVariantService
             if (await _productVariantRepository.Exist(pv =>
                 pv.ArticleNumber == productVariant.ArticleNumber &&
                 pv.Color.ColorName == productVariant.ColorName &&
-                pv.SizeId == productVariant.Size.Id))
+                pv.SizeId == productVariant.SizeId))
             {
                 return null;
             }
@@ -98,6 +98,22 @@ public class ProductVariantService
             _logger.LogError($"Error retrieving product variant: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return null;
+        }
+    }
+
+    public async Task<IEnumerable<ProductVariantEntity>> GetAllProductVariants()
+    {
+        try
+        {
+            var existingProductVariant = await _productVariantRepository.GetAllAsync();
+
+            return existingProductVariant;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error retrieving product variant: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return [];
         }
     }
 

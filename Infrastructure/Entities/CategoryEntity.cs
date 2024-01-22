@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Infrastructure.Dtos;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Entities;
 
@@ -25,4 +23,14 @@ public partial class CategoryEntity
 
     [InverseProperty("Category")]
     public virtual ICollection<ProductEntity> ProductEntities { get; set; } = new List<ProductEntity>();
+
+    public static implicit operator CategoryEntity(Category category)
+    {
+        return new CategoryEntity
+        {
+            CategoryName = category.CategoryName,
+            ParentCategoryId = category.ParentCategoryId
+
+        };
+    }
 }

@@ -4,9 +4,32 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Presentation.wpf.Views"
+             xmlns:viewmodels="clr-namespace:Presentation.wpf.ViewModels"
+             xmlns:views="clr-namespace:Presentation.wpf.Views"
+             d:DataContext="{d:DesignInstance Type=viewmodels:CustomerOrderViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <Label Content="CustomerOrder"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Margin="150,10,0,0" Width="600" HorizontalAlignment="Left">
+            <TextBlock Text="Select Customer:" Margin="12,0,0,5" HorizontalAlignment="left"/>
+            <ComboBox x:Name="CustomerComboBox" Width="200" Height="30" Margin="10,0,0,10" HorizontalAlignment="left" 
+                      ItemsSource="{Binding Customers}" DisplayMemberPath="FullName" 
+                      SelectedItem="{Binding SelectedCustomer}" />
+        </StackPanel>
+        <!-- Navigation button -->
+        <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Left" Margin="5,0,0,20">
+            <Button Content="Add customers" Width="100" Height="30" Command="{Binding NavigateToCustomerCommand}" Margin="5"/>
+            <Button Content="Add products" Width="100" Height="30" Command="{Binding NavigateToDetailsContactCommand}" Margin="5"/>
+            <Button Content="Orders" Width="100" Height="30" Command="{Binding NavigateToUpdateContactCommand}" Margin="5"/>
+           
+        </StackPanel>
+
+        
+       
     </Grid>
 </UserControl>

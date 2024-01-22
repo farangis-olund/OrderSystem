@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Infrastructure.Dtos;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Infrastructure.Entities;
@@ -23,5 +24,17 @@ public class OrderDetailEntity
 
     [ForeignKey(nameof(ProductVariantId))]
     public ProductVariantEntity ProductVariant { get; set; } = null!;
+
+    public static implicit operator OrderDetailEntity(OrderDetail orderDetail)
+    {
+        return new OrderDetailEntity
+        {
+            CustomerOrderId = orderDetail.CustomerOrderId,
+            ProductVariantId = orderDetail.ProductVariantId,
+            Quantity = orderDetail.Quantity,
+            CustomerOrder = orderDetail.CustomerOrder
+
+        };
+    }
 
 }

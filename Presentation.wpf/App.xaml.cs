@@ -1,12 +1,14 @@
-﻿using Business.MappingProfiles;
-using Business.Services;
+﻿using Infrastructure.Services;
 using Infrastructure.Contexts;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Presentation.wpf.ViewModels;
+using Presentation.wpf.Views;
 using System.Windows;
+using System.Collections.ObjectModel;
+using Infrastructure.Dtos;
 
 namespace Presentation.wpf
 {
@@ -19,33 +21,43 @@ namespace Presentation.wpf
             builder = Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
-                    
+                    // presentation services
+
                     services.AddSingleton<MainWindow>();
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<CustomerOrderViewModel>();
+                    services.AddSingleton<CustomerOrderView>();
+                    services.AddSingleton<ProductListViewModel>();
+                    services.AddSingleton<ProductListView>();
+                    services.AddSingleton<ObservableCollection<Product>>();
 
                     // datacontexts
+
                     services.AddDbContext<ProductDataContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\customer_database_cf.mdf;Integrated Security=True;Connect Timeout=30", x => x.MigrationsAssembly(nameof(Infrastructure))));
                     services.AddDbContext<CustomerOrderContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\customer_database_cf.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))));
 
                     // repositories
+                    
                     // product repositories
-                    services.AddSingleton<BrandRepository>();
-                    services.AddSingleton<CategoryRepository>();
-                    services.AddSingleton<ProductRepository>();
-                    services.AddSingleton<ColorRepository>();
-                    services.AddSingleton<CurrencyRepository>();
-                    services.AddSingleton<ImageRepository>();
-                    services.AddSingleton<ProductImageRepository>();
-                    services.AddSingleton<ProductPriceRepository>();
-                    services.AddSingleton<ProductVariantRepository>();
-                    services.AddSingleton<SizeRepository>();
+                    services.AddScoped<BrandRepository>();
+                    services.AddScoped<CategoryRepository>();
+                    services.AddScoped<ProductRepository>();
+                    services.AddScoped<ColorRepository>();
+                    services.AddScoped<CurrencyRepository>();
+                    services.AddScoped<ImageRepository>();
+                    services.AddScoped<ProductImageRepository>();
+                    services.AddScoped<ProductPriceRepository>();
+                    services.AddScoped<ProductVariantRepository>();
+                    services.AddScoped<SizeRepository>();
+                    services.AddSingleton<Product>();
+
                     // customerOrders repositories
-                    services.AddSingleton<CustomerRepository>();
-                    services.AddSingleton<CustomerOrderRepository>();
-                    services.AddSingleton<OrderDetailRepository>();
+                    services.AddScoped<CustomerRepository>();
+                    services.AddScoped<CustomerOrderRepository>();
+                    services.AddScoped<OrderDetailRepository>();
 
                     // services
+                    
                     // product
                     services.AddSingleton<ProductService>();
                     services.AddSingleton<ProductVariantService>();
@@ -57,9 +69,6 @@ namespace Presentation.wpf
                     services.AddSingleton<CustomerService>();
                     services.AddSingleton<CustomerOrderService>();
                     services.AddSingleton<OrderDetailService>();
-
-                    // mappingProfile
-                    services.AddAutoMapper(typeof(MappingProfile));
 
 
                 }).Build();

@@ -1,4 +1,5 @@
-﻿using Infrastructure.Interfaces;
+﻿using Infrastructure.Entities;
+using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -94,23 +95,22 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
     }
 
-    public virtual async Task<bool> UpdateAsync(TEntity entity)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity)
     {
         try
         {
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
-            _logger.LogInformation($"Entity of type {typeof(TEntity).Name} updated successfully.");
-            return true;
+            return entity;
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error updating entity of type {typeof(TEntity).Name}: {ex.Message}");
             Debug.WriteLine(ex.Message);
-            return false;
+            return null!;
         }
     }
+
 
     public virtual async Task<bool> RemoveAsync(Expression<Func<TEntity, bool>> predicate)
     {
@@ -137,6 +137,22 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
     }
 
+    public virtual async Task<bool> RemoveAsync(TEntity entity)
+    {
+        try
+        {
+            _context.Set<TEntity>().Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error removing entity of type {typeof(TEntity).Name}: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return false;
+        }
+    }
+
     public virtual async Task<bool> Exist(Expression<Func<TEntity, bool>> predicate)
     {
         try
@@ -150,5 +166,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
             return false;
         }
     }
+
+    
 
 }

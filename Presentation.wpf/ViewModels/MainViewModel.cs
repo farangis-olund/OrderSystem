@@ -14,6 +14,6 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
-        CurrentViewModel = _serviceProvider.GetRequiredService<CustomerOrderViewModel>();
+        CurrentViewModel = _serviceProvider.GetRequiredService<ProductListViewModel>();
     }
 }

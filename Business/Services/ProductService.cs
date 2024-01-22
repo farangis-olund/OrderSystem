@@ -1,4 +1,4 @@
-﻿using Business.Dtos;
+﻿using Shared.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
@@ -23,7 +23,7 @@ public class ProductService
         _logger = logger;
     }
 
-    public async Task<bool> CreateProduct(Product product)
+    public async Task<bool> AddProduct(Product product)
     {
         try
         {
@@ -59,5 +59,87 @@ public class ProductService
         }
         
     }
-   
+
+    public async Task<ProductEntity> GetProductByArticle(string articleNumber)
+    {
+
+        try
+        {
+            var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == articleNumber);
+
+            if (existingProduct != null)
+            {
+                return existingProduct;
+            }
+            else
+                return null!;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in geting product: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
+    }
+
+    public async Task<IEnumerable<ProductEntity>> GetAllProduct()
+    {
+        try
+        {
+            var existingProduct = await _productRepository.GetAllAsync();
+
+            return existingProduct;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error retrieving product variant: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return [];
+        }
+    }
+
+    public async Task<Product> UpdateProduct(Product product)
+    {
+
+        try
+        {
+            var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == product.ArticleNumber);
+
+            if (existingProduct != null)
+            {
+                return await _productRepository.UpdateAsync(product);
+            }
+            else
+                return null!;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in updating product: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
+    }
+
+    public async Task<bool> DeleteProductByArticle(string articleNumber)
+    {
+
+        try
+        {
+            var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == articleNumber);
+
+            if (existingProduct != null)
+            {
+                await _productRepository.RemoveAsync(existingProduct);
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in deleting product: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return false;
+        }
+    }
 }

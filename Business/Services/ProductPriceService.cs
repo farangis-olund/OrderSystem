@@ -1,4 +1,4 @@
-﻿using Business.Dtos;
+﻿using Shared.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
@@ -40,7 +40,7 @@ namespace Business.Services
 
                 if (!existingPrice)
                 {
-                     await CreatePrice(new ProductPriceEntity
+                    await _productPriceRepository.AddAsync(new ProductPriceEntity
                     {
                         ProductVariantId = productPrice.ProductVariantId,
                         ArticleNumber = productPrice.ArticleNumber,
@@ -60,20 +60,94 @@ namespace Business.Services
             } 
         }
 
-        private async Task<ProductPriceEntity> CreatePrice(ProductPriceEntity newPrice)
+        public async Task<ProductPriceEntity> GetProductPrice(int id)
         {
             try
             {
-                await _productPriceRepository.AddAsync(newPrice);
-                return newPrice;
+                var existingPrice = await _productPriceRepository.GetOneAsync(pp => pp.Id ==id);
+
+                if (existingPrice != null)
+                {
+                    return existingPrice;
+                }
+                else
+                    return null!;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error creating product price: {ex.Message}");
+                _logger.LogError($"Error in geting product price: {ex.Message}");
                 Debug.WriteLine(ex.Message);
                 return null!;
             }
         }
 
+        public async Task<ProductPriceEntity> GetProductPriceByProductVariant(int productVariantId, string articleNumber)
+        {
+            try
+            {
+                var existingPrice = await _productPriceRepository.GetOneAsync(pp => pp.ProductVariantId == productVariantId &&
+                            pp.ArticleNumber == articleNumber);
+
+                if (existingPrice != null)
+                {
+                    return existingPrice;
+                }
+                else
+                    return null!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in geting product price by Product variant: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<ProductPriceEntity> UpdateProductPriceByProductVariant(int productVariantId, string articleNumber, decimal price)
+        {
+            try
+            {
+                var existingPrice = await _productPriceRepository.GetOneAsync(pp => pp.ProductVariantId == productVariantId &&
+                            pp.ArticleNumber == articleNumber);
+
+                if (existingPrice != null)
+                {
+                    existingPrice.Price = price;
+                    return await _productPriceRepository.UpdateAsync(existingPrice);
+                    
+                }
+                else
+                    return null!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in updating product price by Product variant: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<bool> DeleteProductPriceByProductVariant(int productVariantId, string articleNumber)
+        {
+            try
+            {
+                var existingPrice = await _productPriceRepository.GetOneAsync(pp => pp.ProductVariantId == productVariantId &&
+                            pp.ArticleNumber == articleNumber);
+
+                if (existingPrice != null)
+                {
+                    await _productPriceRepository.RemoveAsync(existingPrice);
+                    return true;
+                }
+                else
+                    return false!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in deleting product price by Product variant: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
     }
 }

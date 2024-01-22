@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,4 +37,5 @@ public partial class ProductVariantEntity
     [ForeignKey("SizeId")]
     [InverseProperty("ProductVariantEntities")]
     public virtual SizeEntity Size { get; set; } = null!;
+
 }

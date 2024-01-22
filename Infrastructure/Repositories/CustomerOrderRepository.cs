@@ -24,6 +24,7 @@ public class CustomerOrderRepository : BaseRepository<CustomerOrderContext, Cust
         return base.Exist(predicate);
     }
 
+
     public override Task<IEnumerable<CustomerOrderEntity>> GetAllAsync()
     {
         return base.GetAllAsync();
@@ -44,7 +45,12 @@ public class CustomerOrderRepository : BaseRepository<CustomerOrderContext, Cust
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<bool> UpdateAsync(CustomerOrderEntity entity)
+    public override Task<bool> RemoveAsync(CustomerOrderEntity entity)
+    {
+        return base.RemoveAsync(entity);
+    }
+
+    public override Task<CustomerOrderEntity> UpdateAsync(CustomerOrderEntity entity)
     {
         return base.UpdateAsync(entity);
     }

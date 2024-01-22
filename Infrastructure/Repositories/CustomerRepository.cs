@@ -38,7 +38,7 @@ public class CustomerRepository(CustomerOrderContext context, ILogger<CustomerRe
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<bool> UpdateAsync(CustomerEntity entity)
+    public override Task<CustomerEntity> UpdateAsync(CustomerEntity entity)
     {
         return base.UpdateAsync(entity);
     }

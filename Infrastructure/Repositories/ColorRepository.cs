@@ -34,12 +34,17 @@ namespace Infrastructure.Repositories
             return base.GetOneAsync(predicate);
         }
 
+        public override Task<ColorEntity?> GetOneAsync(Expression<Func<ColorEntity, bool>> predicate, Func<Task<ColorEntity>> createIfNotFound)
+        {
+            return base.GetOneAsync(predicate, createIfNotFound);
+        }
+
         public override Task<bool> RemoveAsync(Expression<Func<ColorEntity, bool>> predicate)
         {
             return base.RemoveAsync(predicate);
         }
 
-        public override Task<bool> UpdateAsync(ColorEntity entity)
+        public override Task<ColorEntity> UpdateAsync(ColorEntity entity)
         {
             return base.UpdateAsync(entity);
         }

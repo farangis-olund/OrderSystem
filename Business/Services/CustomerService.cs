@@ -1,7 +1,6 @@
-﻿using Business.Dtos;
+﻿using Shared.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
@@ -64,12 +63,10 @@ public class CustomerService
                 Debug.WriteLine("Customer does not exist!");
                 return null!;
             }
-
-            
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in adding product image: {ex.Message}");
+            _logger.LogError($"Error in geting customer: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return null!;
         }
@@ -99,6 +96,49 @@ public class CustomerService
             _logger.LogError($"Error in adding product image: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return null!;
+        }
+    }
+
+    public async Task<CustomerEntity?> UpdateCustomer(Customer customer)
+    {
+        try
+        {
+            var existingCustomerOrder = await _customerRepository.Exist(c => c.Email == customer.Email);
+            if (existingCustomerOrder)
+            {
+                return await _customerRepository.UpdateAsync(customer);
+            }
+            else
+                return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in adding customer order: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return null;
+        }
+    }
+
+    public async Task<bool> DeleteCustomer(Customer customer)
+    {
+        try
+        {
+
+            var existingCustomerOrder = await _customerRepository.Exist(x => x.Equals(customer));
+
+            if (existingCustomerOrder)
+            {
+                await _customerRepository.RemoveAsync(customer);
+                return true;
+            }
+            else
+                return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in adding customer order: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return false;
         }
     }
 }

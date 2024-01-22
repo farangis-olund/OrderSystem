@@ -1,9 +1,8 @@
-﻿using Business.Dtos;
+﻿using Shared.Dtos;
 using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Drawing;
 
 namespace Business.Services
 {
@@ -49,6 +48,79 @@ namespace Business.Services
             catch (Exception ex)
             {
                 _logger.LogError($"Error in adding product image: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<ProductImageEntity> GetProductImage(int productVariantId, int imageId)
+        {
+
+            try
+            {
+                var existingProductImage = await _productImageRepository.GetOneAsync(
+                                    pi => pi.ProductVariantId == productVariantId &&
+                                    pi.ImageId == imageId);
+
+                if (existingProductImage !=null)
+                {
+                    return existingProductImage;
+                }
+                else
+                return null!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in geting product image: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<ProductImageEntity> UpdateProductImage(ProductImage productImage, string imageUrl)
+        {
+
+            try
+            {
+                var existingProductImage = await _productImageRepository.GetOneAsync(
+                                    pi => pi.ProductVariantId == productImage.ProductVariantId &&
+                                    pi.ArticleNumber == productImage.ArticleNumber && pi.ImageId == productImage.ImageId);
+
+                if (existingProductImage != null)
+                {
+                    existingProductImage.Image.ImageUrl = imageUrl;
+                    return await _productImageRepository.UpdateAsync(existingProductImage);
+                }
+                else
+                    return null!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in updating product image: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<bool> DeleteProductImage(ProductImage productImage)
+        {
+
+            try
+            {
+                var existingProductImage = await _productImageRepository.Exist(
+                                    pi => pi.ProductVariantId == productImage.ProductVariantId &&
+                                    pi.ArticleNumber == productImage.ArticleNumber && pi.ImageId == productImage.ImageId);
+
+                if (existingProductImage)
+                {
+                    return await _productImageRepository.RemoveAsync(productImage);
+                }
+                else
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in updating product image: {ex.Message}");
                 Debug.WriteLine(ex.Message);
                 return false;
             }
