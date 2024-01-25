@@ -18,7 +18,7 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<CategoryEntity> AddCategory(Category category)
+        public async Task<CategoryEntity> AddCategoryAsync(Category category)
         {
 
             try
@@ -47,7 +47,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<CategoryEntity> GetCategory(string categoryName, int parentCategoryId)
+        public async Task<CategoryEntity> GetCategoryAsync(string categoryName, int parentCategoryId)
         {
 
             try
@@ -70,18 +70,42 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<CategoryEntity> UpdateCategory(Category category)
+        public async Task<CategoryEntity> GetCategoryAsync(int id)
         {
 
             try
             {
-                var existingCategory = await _categoryRepository.Exist(c => c.Id == category.Id);
-                if (existingCategory)
+                var existingCategory = await _categoryRepository.GetOneAsync(c => c.Id == id);
+                if (existingCategory != null)
                 {
-                    return await _categoryRepository.UpdateAsync(category);
+                    return existingCategory;
                 }
                 else
-                    return category;
+                    return null!;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in adding category: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<CategoryEntity> UpdateCategoryAsync(int id, string categoryName)
+        {
+
+            try
+            {
+                var existingCategory = await _categoryRepository.GetOneAsync(c => c.Id == id);
+                if (existingCategory != null)
+                {
+                    existingCategory.CategoryName = categoryName;
+                    Func<CategoryEntity, object> keySelector = p => p.Id;
+                    return await _categoryRepository.UpdateAsync(existingCategory, keySelector);
+                }
+                else
+                    return existingCategory!;
             }
             catch (Exception ex)
             {
@@ -91,7 +115,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<bool> DeleteCategory(Category category)
+        public async Task<bool> DeleteCategoryAsync(Category category)
         {
 
             try

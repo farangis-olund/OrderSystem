@@ -15,12 +15,16 @@
         <ContentControl Content="{Binding CurrentViewModel}">
             <ContentControl.Resources>
 
-                <DataTemplate DataType="{x:Type viewmodels:CustomerOrderViewModel}">
-                    <views:CustomerOrderView/>
-                </DataTemplate>
-
                 <DataTemplate DataType="{x:Type viewmodels:ProductListViewModel}">
                     <views:ProductListView/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type viewmodels:AddProductViewModel}">
+                    <views:AddProductView/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type viewmodels:ProductUpdateViewModel}">
+                    <views:ProductUpdateView/>
                 </DataTemplate>
 
             </ContentControl.Resources>

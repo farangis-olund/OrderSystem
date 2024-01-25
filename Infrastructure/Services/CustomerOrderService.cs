@@ -21,17 +21,17 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<CustomerOrderEntity?> AddCustomerOrder(CustomerOrder customerOrder, Customer customer)
+        public async Task<CustomerOrderEntity> AddCustomerOrderAsync(CustomerOrder customerOrder, Customer customer)
         {
             try
             {
-                var existingCustomer = await _customerService.GetCustomer(customer.Email) 
-                    ?? await _customerService.AddCustomer(customer);
+                var existingCustomer = await _customerService.GetCustomerAsync(customer.Email) 
+                    ?? await _customerService.AddCustomerAsync(customer);
 
                 if (existingCustomer == null)
                 {
                     _logger.LogError("Failed to add or retrieve the customer.");
-                    return null;
+                    return null!;
                 }
 
                 var newCustomerOrder = new CustomerOrderEntity
@@ -47,11 +47,11 @@ namespace Infrastructure.Services
             {
                 _logger.LogError($"Error in adding customer order: {ex.Message}");
                 Debug.WriteLine(ex.Message);
-                return null;
+                return null!;
             }
         }
 
-        public async Task<CustomerOrderEntity> GetCustomerOrderById(int id)
+        public async Task<CustomerOrderEntity> GetCustomerOrderByIdAsync(int id)
         {
             try
             {
@@ -65,27 +65,28 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<CustomerOrderEntity?> UpdateCustomerOrder(int id, CustomerOrder customerOrder)
+        public async Task<CustomerOrderEntity> UpdateCustomerOrderAsync(int id, CustomerOrder customerOrder)
         {
             try
             {
                 var existingCustomerOrder = await _customerOrderRepository.Exist(co => co.Id == id);
                 if (existingCustomerOrder)
                 {
-                    return await _customerOrderRepository.UpdateAsync(customerOrder);
+                    Func<CustomerOrderEntity, object> keySelector = p => p.Id;
+                    return await _customerOrderRepository.UpdateAsync(customerOrder, keySelector);
                 }
                 else
-                    return null;
+                    return null!;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in adding customer order: {ex.Message}");
                 Debug.WriteLine(ex.Message);
-                return null;
+                return null!;
             }
         }
 
-        public async Task<bool> DeleteCustomerOrder(CustomerOrder customerOrder)
+        public async Task<bool> DeleteCustomerOrderAsync(CustomerOrder customerOrder)
         {
             try
             {

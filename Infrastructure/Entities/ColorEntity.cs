@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Infrastructure.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Entities;
@@ -15,4 +16,13 @@ public partial class ColorEntity
 
     [InverseProperty("Color")]
     public virtual ICollection<ProductVariantEntity> ProductVariantEntities { get; set; } = new List<ProductVariantEntity>();
+    
+    public static implicit operator ColorEntity(Color color)
+    {
+        return new ColorEntity
+        {
+            ColorName = color.ColorName
+
+        };
+    }
 }

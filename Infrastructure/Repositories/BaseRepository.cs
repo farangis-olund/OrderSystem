@@ -52,7 +52,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
     }
 
-    public virtual async Task<TEntity?> GetOneAsync(Expression<Func<TEntity, bool>> predicate, Func<Task<TEntity>> createIfNotFound)
+    public virtual async Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> predicate, Func<Task<TEntity>> createIfNotFound)
     {
         try
         {
@@ -71,7 +71,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         {
             _logger.LogError($"Error getting entity of type {typeof(TEntity).Name} by id: {ex.Message}");
             Debug.WriteLine(ex.Message);
-            return null;
+            return null!;
         }
     }
 
@@ -95,10 +95,18 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
     }
 
-    public virtual async Task<TEntity> UpdateAsync(TEntity entity)
+    public virtual async Task<TEntity> UpdateAsync(TEntity entity, Func<TEntity, object> keySelector)
     {
         try
         {
+            var keyValue = keySelector(entity);
+
+            var existingEntity = _context.Set<TEntity>().Local.FirstOrDefault(e => keySelector(e).Equals(keyValue));
+            if (existingEntity != null)
+            {
+                _context.Entry(existingEntity).State = EntityState.Detached;
+            }
+
             _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return entity;

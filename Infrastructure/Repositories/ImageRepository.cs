@@ -34,7 +34,7 @@ public class ImageRepository : BaseRepository<ProductDataContext, ImageEntity>
         return base.GetOneAsync(predicate);
     }
 
-    public override Task<ImageEntity?> GetOneAsync(Expression<Func<ImageEntity, bool>> predicate, Func<Task<ImageEntity>> createIfNotFound)
+    public override Task<ImageEntity> GetOneAsync(Expression<Func<ImageEntity, bool>> predicate, Func<Task<ImageEntity>> createIfNotFound)
     {
         return base.GetOneAsync(predicate, createIfNotFound);
     }
@@ -44,8 +44,13 @@ public class ImageRepository : BaseRepository<ProductDataContext, ImageEntity>
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<ImageEntity> UpdateAsync(ImageEntity entity)
+    public override Task<bool> RemoveAsync(ImageEntity entity)
     {
-        return base.UpdateAsync(entity);
+        return base.RemoveAsync(entity);
+    }
+
+    public override Task<ImageEntity> UpdateAsync(ImageEntity entity, Func<ImageEntity, object> keySelector)
+    {
+        return base.UpdateAsync(entity, keySelector);
     }
 }

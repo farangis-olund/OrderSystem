@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
             return base.GetOneAsync(predicate);
         }
 
-        public override Task<BrandEntity?> GetOneAsync(Expression<Func<BrandEntity, bool>> predicate, Func<Task<BrandEntity>> createIfNotFound)
+        public override Task<BrandEntity> GetOneAsync(Expression<Func<BrandEntity, bool>> predicate, Func<Task<BrandEntity>> createIfNotFound)
         {
             return base.GetOneAsync(predicate, createIfNotFound);
         }
@@ -43,9 +43,14 @@ namespace Infrastructure.Repositories
             return base.RemoveAsync(predicate);
         }
 
-        public override Task<BrandEntity> UpdateAsync(BrandEntity entity)
+        public override Task<bool> RemoveAsync(BrandEntity entity)
         {
-            return base.UpdateAsync(entity);
+            return base.RemoveAsync(entity);
+        }
+
+        public override Task<BrandEntity> UpdateAsync(BrandEntity entity, Func<BrandEntity, object> keySelector)
+        {
+            return base.UpdateAsync(entity, keySelector);
         }
     }
 }

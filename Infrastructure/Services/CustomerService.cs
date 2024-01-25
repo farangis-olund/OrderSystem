@@ -17,7 +17,7 @@ public class CustomerService
         _logger = logger;
     }
 
-    public async Task<CustomerEntity> AddCustomer(Customer customer)
+    public async Task<CustomerEntity> AddCustomerAsync(Customer customer)
     {
 
         try
@@ -47,7 +47,7 @@ public class CustomerService
         }
     }
 
-    public async Task<CustomerEntity> GetCustomer(Customer customer)
+    public async Task<CustomerEntity> GetCustomerAsync(Customer customer)
     {
 
         try
@@ -72,7 +72,7 @@ public class CustomerService
         }
     }
 
-    public async Task<CustomerEntity> GetCustomer(string email)
+    public async Task<CustomerEntity> GetCustomerAsync(string email)
     {
 
         try
@@ -99,27 +99,28 @@ public class CustomerService
         }
     }
 
-    public async Task<CustomerEntity?> UpdateCustomer(Customer customer)
+    public async Task<CustomerEntity> UpdateCustomerAsync(Customer customer)
     {
         try
         {
             var existingCustomerOrder = await _customerRepository.Exist(c => c.Email == customer.Email);
             if (existingCustomerOrder)
             {
-                return await _customerRepository.UpdateAsync(customer);
+                Func<CustomerEntity, object> keySelector = p => p.Id;
+                return await _customerRepository.UpdateAsync(customer, keySelector);
             }
             else
-                return null;
+                return null!;
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error in adding customer order: {ex.Message}");
             Debug.WriteLine(ex.Message);
-            return null;
+            return null!;
         }
     }
 
-    public async Task<bool> DeleteCustomer(Customer customer)
+    public async Task<bool> DeleteCustomerAsync(Customer customer)
     {
         try
         {

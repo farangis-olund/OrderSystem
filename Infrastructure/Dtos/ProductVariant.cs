@@ -1,5 +1,6 @@
 ﻿
 using Infrastructure.Entities;
+using System.Drawing;
 
 namespace Infrastructure.Dtos;
 
@@ -23,6 +24,17 @@ public class ProductVariant
             ColorId = entity.ColorId,
             Size = entity.Size
             
+        };
+    }
+
+    public static implicit operator ProductVariant(ProductDetail productDetail)
+    {
+        return new ProductVariant
+        {
+            ArticleNumber = productDetail.ArticleNumber,
+            Quantity = productDetail.Quantity,
+            SizeId = productDetail.SizeId,
+            ColorName = productDetail.ColorName
         };
     }
 }

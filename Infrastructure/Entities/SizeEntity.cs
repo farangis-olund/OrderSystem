@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Infrastructure.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Entities;
@@ -24,4 +25,14 @@ public partial class SizeEntity
 
     [InverseProperty("Size")]
     public virtual ICollection<ProductVariantEntity> ProductVariantEntities { get; set; } = new List<ProductVariantEntity>();
+
+    public static implicit operator SizeEntity(ProductSize productSize)
+    {
+        return new SizeEntity
+        {
+            SizeType = productSize.SizeType,
+            SizeValue = productSize.SizeValue,
+            AgeGroup = productSize.AgeGroup
+        };
+    }
 }

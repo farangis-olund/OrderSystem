@@ -22,7 +22,7 @@ namespace Infrastructure.Services
         }
 
 
-        public async Task<bool> AddProductPrice(ProductPrice productPrice)
+        public async Task<bool> AddProductPriceAsync(ProductPrice productPrice)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Infrastructure.Services
             } 
         }
 
-        public async Task<ProductPriceEntity> GetProductPrice(int id)
+        public async Task<ProductPriceEntity> GetProductPriceAsync(int id)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<ProductPriceEntity> GetProductPriceByProductVariant(int productVariantId, string articleNumber)
+        public async Task<ProductPriceEntity> GetProductPriceByProductVariantAsync(int productVariantId, string articleNumber)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<ProductPriceEntity> UpdateProductPriceByProductVariant(int productVariantId, string articleNumber, decimal price)
+        public async Task<ProductPriceEntity> UpdateProductPriceByProductVariantAsync(int productVariantId, string articleNumber, decimal price)
         {
             try
             {
@@ -113,7 +113,8 @@ namespace Infrastructure.Services
                 if (existingPrice != null)
                 {
                     existingPrice.Price = price;
-                    return await _productPriceRepository.UpdateAsync(existingPrice);
+                    Func<ProductPriceEntity, object> keySelector = p => p.Id;
+                    return await _productPriceRepository.UpdateAsync(existingPrice, keySelector);
                     
                 }
                 else
@@ -127,7 +128,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<bool> DeleteProductPriceByProductVariant(int productVariantId, string articleNumber)
+        public async Task<bool> DeleteProductPriceByProductVariantAsync(int productVariantId, string articleNumber)
         {
             try
             {

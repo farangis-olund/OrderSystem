@@ -9,6 +9,7 @@ using Presentation.wpf.Views;
 using System.Windows;
 using System.Collections.ObjectModel;
 using Infrastructure.Dtos;
+using Presentation.wpf.Services;
 
 namespace Presentation.wpf
 {
@@ -25,11 +26,18 @@ namespace Presentation.wpf
 
                     services.AddSingleton<MainWindow>();
                     services.AddSingleton<MainViewModel>();
-                    services.AddSingleton<CustomerOrderViewModel>();
-                    services.AddSingleton<CustomerOrderView>();
                     services.AddSingleton<ProductListViewModel>();
                     services.AddSingleton<ProductListView>();
-                    services.AddSingleton<ObservableCollection<Product>>();
+                    services.AddSingleton<AddProductViewModel>();
+                    services.AddSingleton<AddProductView>();
+                    services.AddTransient<ProductUpdateViewModel>();
+                    services.AddTransient<ProductUpdateView>();
+                    services.AddSingleton<DataTransferService>();
+
+
+                    services.AddSingleton<ObservableCollection<ProductDetail>>();
+                    services.AddSingleton<ObservableCollection<ProductSize>>();
+
 
                     // datacontexts
 
@@ -50,6 +58,8 @@ namespace Presentation.wpf
                     services.AddScoped<ProductVariantRepository>();
                     services.AddScoped<SizeRepository>();
                     services.AddSingleton<Product>();
+                    services.AddSingleton<ProductDetail>();
+                    services.AddSingleton<ProductSize>();
 
                     // customerOrders repositories
                     services.AddScoped<CustomerRepository>();
@@ -60,10 +70,13 @@ namespace Presentation.wpf
                     
                     // product
                     services.AddSingleton<ProductService>();
+                    services.AddSingleton<ProductPresentationService>();
                     services.AddSingleton<ProductVariantService>();
                     services.AddSingleton<ProductPriceService>();
                     services.AddSingleton<ProductImageService>();
-                    services.AddSingleton<ProductImageService>();
+                    services.AddSingleton<ProductSizeService>();
+                    services.AddSingleton<ProductCategoryService>();
+
 
                     // customer
                     services.AddSingleton<CustomerService>();

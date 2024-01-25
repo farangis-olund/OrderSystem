@@ -47,4 +47,18 @@ public partial class ProductEntity
 
         };
     }
+
+    public static implicit operator ProductEntity(ProductDetail product)
+    {
+        return new ProductEntity
+        {
+            ArticleNumber = product.ArticleNumber,
+            ProductName = product.ProductName,
+            Material = product.Material,
+            ProductInfo = product.ProductInfo,
+            CategoryId = product.CategoryId,
+            BrandId = product.BrandId
+
+        };
+    }
 }

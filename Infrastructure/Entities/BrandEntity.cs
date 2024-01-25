@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Infrastructure.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Entities;
@@ -15,4 +16,13 @@ public partial class BrandEntity
 
     [InverseProperty("Brand")]
     public virtual ICollection<ProductEntity> ProductEntities { get; set; } = new List<ProductEntity>();
+
+    public static implicit operator BrandEntity(ProductDetail productDetail)
+    {
+        return new BrandEntity
+        {
+            BrandName = productDetail.BrandName
+
+        };
+    }
 }

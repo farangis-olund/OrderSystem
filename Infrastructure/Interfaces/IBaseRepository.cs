@@ -8,7 +8,7 @@ namespace Infrastructure.Interfaces
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<TEntity> GetOneAsync(Expression<Func<TEntity, bool>> predicate);
         Task<bool> RemoveAsync(Expression<Func<TEntity, bool>> predicate);
-        Task<TEntity> UpdateAsync(TEntity entity);
+        Task<TEntity> UpdateAsync(TEntity entity, Func<TEntity, object> keySelector);
         Task<bool> Exist(Expression<Func<TEntity, bool>> predicate);
     }
 }

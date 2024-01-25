@@ -24,13 +24,13 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<OrderDetailEntity?> AddOrderDetail(OrderDetail orderDetail, int customerOrderId, int productVariantId)
+        public async Task<OrderDetailEntity> AddOrderDetailAsync(OrderDetail orderDetail, int customerOrderId, int productVariantId)
         {
             try
             {
-                var existingCustomerOrder = await _customerOrderService.GetCustomerOrderById(customerOrderId);
+                var existingCustomerOrder = await _customerOrderService.GetCustomerOrderByIdAsync(customerOrderId);
 
-                var existingProductVariant = await _productVariantService.GetProductVariantById(productVariantId);
+                var existingProductVariant = await _productVariantService.GetProductVariantByIdAsync(productVariantId);
                 
                 if(existingCustomerOrder != null &&  existingProductVariant != null)
                 {
@@ -51,17 +51,17 @@ namespace Infrastructure.Services
                     }
                 }  
                 
-                return null;
+                return null!;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in adding customer order: {ex.Message}");
                 Debug.WriteLine(ex.Message);
-                return null;
+                return null!;
             }
         }
 
-        public async Task<OrderDetailEntity> GetOrderDetail(OrderDetail orderDetail)
+        public async Task<OrderDetailEntity> GetOrderDetailAsync(OrderDetail orderDetail)
         {
 
             try
@@ -86,7 +86,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<OrderDetailEntity> GetOrderDetail(int id)
+        public async Task<OrderDetailEntity> GetOrderDetailAsync(int id)
         {
 
             try
@@ -113,27 +113,28 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<OrderDetailEntity?> UpdateOrderDetail(OrderDetail orderDetail)
+        public async Task<OrderDetailEntity> UpdateOrderDetailAsync(OrderDetail orderDetail)
         {
             try
             {
                 var existingOrderDetail = await _orderDetailRepository.Exist(x => x.Equals(orderDetail));
                 if (existingOrderDetail)
                 {
-                    return await _orderDetailRepository.UpdateAsync(orderDetail);
+                    Func<OrderDetailEntity, object> keySelector = p => p.OrderDetailId;
+                    return await _orderDetailRepository.UpdateAsync(orderDetail, keySelector);
                 }
                 else
-                    return null;
+                    return null!;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in updating Order detail: {ex.Message}");
                 Debug.WriteLine(ex.Message);
-                return null;
+                return null!;
             }
         }
 
-        public async Task<bool> DeleteOrderDetail(OrderDetail orderDetail)
+        public async Task<bool> DeleteOrderDetailAsync(OrderDetail orderDetail)
         {
             try
             {

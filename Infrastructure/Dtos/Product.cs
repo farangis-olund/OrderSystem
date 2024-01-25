@@ -24,8 +24,26 @@ public class Product
             ProductName = entity.ProductName,
             Material = entity.Material!,
             ProductInfo = entity.ProductInfo!,
-            CategoryId = entity.CategoryId
+            CategoryId = entity.CategoryId,
+            BrandId = entity.BrandId
            
+        };
+    }
+
+    public static implicit operator Product(ProductDetail productDetail)
+    {
+        return new Product
+        {
+            ArticleNumber = productDetail.ArticleNumber,
+            ProductName = productDetail.ProductName,
+            Material = productDetail.Material!,
+            ProductInfo = productDetail.ProductInfo!,
+            CategoryName = productDetail.CategoryName,
+            BrandName = productDetail.BrandName,
+            BrandId = productDetail.BrandId,
+            CategoryId = productDetail.CategoryId
+
+
         };
     }
 }

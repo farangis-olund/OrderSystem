@@ -11,19 +11,35 @@ public class ProductService
     private readonly BrandRepository _brandRepository;
     private readonly CategoryRepository _categoryRepository;
     private readonly ProductRepository _productRepository;
+    private readonly ProductVariantService _productVariantService;
+    private readonly ProductImageService _productImageService;
+    private readonly ImageRepository _imageRepository;
+    private readonly ProductPriceService _productPriceService;
+    private readonly ColorRepository _colorRepository;
     private readonly ILogger<ProductService> _logger;
+
     public ProductService(BrandRepository brandRepository, 
                           CategoryRepository categoryRepository, 
                           ProductRepository productRepository,
+                          ProductImageService productImageService,
+                          ProductVariantService productVariantService,
+                          ImageRepository imageRepository,
+                          ProductPriceService productPriceService,
+                          ColorRepository colorRepository,
                           ILogger<ProductService> logger)
     {
         _brandRepository = brandRepository;
         _categoryRepository = categoryRepository;
         _productRepository = productRepository;
+        _productImageService = productImageService;
+        _productVariantService = productVariantService;
+        _imageRepository = imageRepository;
+        _productPriceService = productPriceService;
+        _colorRepository = colorRepository;
         _logger = logger;
     }
 
-    public async Task<bool> AddProduct(Product product)
+    public async Task<bool> AddProductAsync(Product product)
     {
         try
         {
@@ -44,8 +60,8 @@ public class ProductService
                 ProductName = product.ProductName,
                 Material = product.Material,
                 ProductInfo = product.ProductInfo,
-                Brand = existingBrand,
-                Category = existingCategory
+                BrandId = existingBrand.Id,
+                CategoryId = existingCategory.Id
             };
 
             var result = await _productRepository.AddAsync(productEntity);
@@ -60,7 +76,7 @@ public class ProductService
         
     }
 
-    public async Task<ProductEntity> GetProductByArticle(string articleNumber)
+    public async Task<ProductEntity> GetProductByArticleAsync(string articleNumber)
     {
 
         try
@@ -82,7 +98,7 @@ public class ProductService
         }
     }
 
-    public async Task<IEnumerable<ProductEntity>> GetAllProduct()
+    public async Task<IEnumerable<ProductEntity>> GetAllProductAsync()
     {
         try
         {
@@ -98,7 +114,7 @@ public class ProductService
         }
     }
 
-    public async Task<Product> UpdateProduct(Product product)
+    public async Task<Product> UpdateProductAsync(Product product)
     {
 
         try
@@ -107,7 +123,8 @@ public class ProductService
 
             if (existingProduct != null)
             {
-                return await _productRepository.UpdateAsync(product);
+                object keySelector(ProductEntity p) => p.ArticleNumber;
+                return await _productRepository.UpdateAsync(product, keySelector);
             }
             else
                 return null!;
@@ -120,15 +137,15 @@ public class ProductService
         }
     }
 
-    public async Task<bool> DeleteProductByArticle(string articleNumber)
+    public async Task<bool> DeleteProductByArticleAsync(string articleNumber)
     {
 
         try
         {
             var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == articleNumber);
-
             if (existingProduct != null)
             {
+                await _productVariantService.DeleteProductVariantByArticleAsync(articleNumber);
                 await _productRepository.RemoveAsync(existingProduct);
                 return true;
             }
@@ -142,4 +159,6 @@ public class ProductService
             return false;
         }
     }
+
+    
 }

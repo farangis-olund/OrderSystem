@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
             return base.GetOneAsync(predicate);
         }
 
-        public override Task<ColorEntity?> GetOneAsync(Expression<Func<ColorEntity, bool>> predicate, Func<Task<ColorEntity>> createIfNotFound)
+        public override Task<ColorEntity> GetOneAsync(Expression<Func<ColorEntity, bool>> predicate, Func<Task<ColorEntity>> createIfNotFound)
         {
             return base.GetOneAsync(predicate, createIfNotFound);
         }
@@ -44,9 +44,14 @@ namespace Infrastructure.Repositories
             return base.RemoveAsync(predicate);
         }
 
-        public override Task<ColorEntity> UpdateAsync(ColorEntity entity)
+        public override Task<bool> RemoveAsync(ColorEntity entity)
         {
-            return base.UpdateAsync(entity);
+            return base.RemoveAsync(entity);
+        }
+
+        public override Task<ColorEntity> UpdateAsync(ColorEntity entity, Func<ColorEntity, object> keySelector)
+        {
+            return base.UpdateAsync(entity, keySelector);
         }
     }
 }

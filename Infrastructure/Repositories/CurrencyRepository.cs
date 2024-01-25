@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
             return base.GetOneAsync(predicate);
         }
 
-        public override Task<CurrencyEntity?> GetOneAsync(Expression<Func<CurrencyEntity, bool>> predicate, Func<Task<CurrencyEntity>> createIfNotFound)
+        public override Task<CurrencyEntity> GetOneAsync(Expression<Func<CurrencyEntity, bool>> predicate, Func<Task<CurrencyEntity>> createIfNotFound)
         {
             return base.GetOneAsync(predicate, createIfNotFound);
         }
@@ -44,9 +44,14 @@ namespace Infrastructure.Repositories
             return base.RemoveAsync(predicate);
         }
 
-        public override Task<CurrencyEntity> UpdateAsync(CurrencyEntity entity)
+        public override Task<bool> RemoveAsync(CurrencyEntity entity)
         {
-            return base.UpdateAsync(entity);
+            return base.RemoveAsync(entity);
+        }
+
+        public override Task<CurrencyEntity> UpdateAsync(CurrencyEntity entity, Func<CurrencyEntity, object> keySelector)
+        {
+            return base.UpdateAsync(entity, keySelector);
         }
     }
 }

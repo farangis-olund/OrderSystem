@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Infrastructure.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Entities;
@@ -38,4 +39,16 @@ public partial class ProductVariantEntity
     [InverseProperty("ProductVariantEntities")]
     public virtual SizeEntity Size { get; set; } = null!;
 
+    public static implicit operator ProductVariantEntity(ProductVariant entity)
+    {
+        return new ProductVariantEntity
+        {
+            ArticleNumber = entity.ArticleNumber,
+            Quantity = entity.Quantity,
+            SizeId = entity.SizeId,
+            ColorId = entity.ColorId,
+            
+
+        };
+    }
 }

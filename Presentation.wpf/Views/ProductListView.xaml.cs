@@ -24,5 +24,10 @@ namespace Presentation.wpf.Views
         {
             InitializeComponent();
         }
+
+        private void ItemBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

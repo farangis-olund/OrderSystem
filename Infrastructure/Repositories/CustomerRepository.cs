@@ -23,7 +23,7 @@ public class CustomerRepository(CustomerOrderContext context, ILogger<CustomerRe
         return base.GetAllAsync();
     }
 
-    public override Task<CustomerEntity?> GetOneAsync(Expression<Func<CustomerEntity, bool>> predicate, Func<Task<CustomerEntity>> createIfNotFound)
+    public override Task<CustomerEntity> GetOneAsync(Expression<Func<CustomerEntity, bool>> predicate, Func<Task<CustomerEntity>> createIfNotFound)
     {
         return base.GetOneAsync(predicate, createIfNotFound);
     }
@@ -38,8 +38,13 @@ public class CustomerRepository(CustomerOrderContext context, ILogger<CustomerRe
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<CustomerEntity> UpdateAsync(CustomerEntity entity)
+    public override Task<bool> RemoveAsync(CustomerEntity entity)
     {
-        return base.UpdateAsync(entity);
+        return base.RemoveAsync(entity);
+    }
+
+    public override Task<CustomerEntity> UpdateAsync(CustomerEntity entity, Func<CustomerEntity, object> keySelector)
+    {
+        return base.UpdateAsync(entity, keySelector);
     }
 }

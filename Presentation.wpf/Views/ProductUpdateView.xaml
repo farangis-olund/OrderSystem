@@ -1,0 +1,130 @@
+﻿<UserControl x:Class="Presentation.wpf.Views.ProductUpdateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Presentation.wpf.Views"
+             xmlns:views="clr-namespace:Presentation.wpf.Views"
+             xmlns:viewmodels="clr-namespace:Presentation.wpf.ViewModels"
+              d:DataContext="{d:DesignInstance Type=viewmodels:ProductUpdateViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MaxWidth="150"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="0,90,0,0">
+            <Button x:Name="DashboardButton" Content="Dashboard" Height="58" Background="#71639C" Foreground="Beige" Command="{Binding NavigateToProductListCommand}"/>
+            <Button x:Name="OrderButton" Content="Orders" Height="58" Background="#71639C"  Foreground="Beige"/>
+            <Button Content="Products" Height="58" Background="#71639C"  Foreground="Beige" Command="{Binding NavigateToProductListCommand}"/>
+            <Button x:Name="CustmersButton" Content="Customers" Height="58" Background="#71639C"  Foreground="Beige" />
+            <Button x:Name="LogoutButton" Content="Logout" Height="58" Background="#71639C"  Foreground="Beige"/>
+        </StackPanel>
+
+        <Grid Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="72"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <TextBlock Text="Sale Managment System"  VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Margin="70,0,0,0"/>
+                <Button Grid.Column="1" Content="Save Porduct"  HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding UpdateProductCommand}" FontWeight="SemiBold" Padding="10,5" BorderThickness="1.5" BorderBrush="#71639C" Background="Transparent"/>
+            </Grid>
+
+            <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: Image -->
+                <StackPanel Grid.Column="0" Margin="10">
+                    <Image Source="{Binding Product.ImageUrl}" Width="200" Height="150" />
+                    <!-- Add any additional image-related controls or information here -->
+                </StackPanel>
+
+                <!-- Right Column: Product Information -->
+                <Grid Grid.Column="1" Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Product detail information" FontSize="20" FontWeight="Bold" Margin="35,0,0,10"/>
+                    <!-- Right Column: Product Information -->
+                    <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,0,0,0">
+                        <ScrollViewer >
+                            <StackPanel Margin="20">
+                                <StackPanel Margin="0,0,0,10" >
+                                    <Label Content="Article Number" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.ArticleNumber}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Product Name" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.ProductName}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Material" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.Material}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Product Info" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.ProductInfo}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Brand Name" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.BrandName}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Image URL" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.ImageUrl}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Color Name" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.ColorName}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Quantity" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.Quantity}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Size" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.SizeValue}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Price" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.Price}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Currency" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.Currency}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,10">
+                                    <Label Content="Category Name" Foreground="Gray"/>
+                                    <TextBox Text="{Binding Product.CategoryName}" Margin="0,0,0,0" Height="25"/>
+                                </StackPanel>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</UserControl>

@@ -29,7 +29,7 @@ public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderD
         return base.GetAllAsync();
     }
 
-    public override Task<OrderDetailEntity?> GetOneAsync(Expression<Func<OrderDetailEntity, bool>> predicate, Func<Task<OrderDetailEntity>> createIfNotFound)
+    public override Task<OrderDetailEntity> GetOneAsync(Expression<Func<OrderDetailEntity, bool>> predicate, Func<Task<OrderDetailEntity>> createIfNotFound)
     {
         return base.GetOneAsync(predicate, createIfNotFound);
     }
@@ -44,8 +44,13 @@ public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderD
         return base.RemoveAsync(predicate);
     }
 
-    public override Task<OrderDetailEntity> UpdateAsync(OrderDetailEntity entity)
+    public override Task<bool> RemoveAsync(OrderDetailEntity entity)
     {
-        return base.UpdateAsync(entity);
+        return base.RemoveAsync(entity);
+    }
+
+    public override Task<OrderDetailEntity> UpdateAsync(OrderDetailEntity entity, Func<OrderDetailEntity, object> keySelector)
+    {
+        return base.UpdateAsync(entity, keySelector);
     }
 }

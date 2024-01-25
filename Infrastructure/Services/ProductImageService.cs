@@ -19,7 +19,7 @@ namespace Infrastructure.Services
             _logger = logger;
         }
         
-        public async Task<bool> AddProductImage(ProductImage productImage)
+        public async Task<bool> AddProductImageAsync(ProductImage productImage)
         {
 
             try
@@ -53,7 +53,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<ProductImageEntity> GetProductImage(int productVariantId, int imageId)
+        public async Task<ProductImageEntity> GetProductImageAsync(int productVariantId, int imageId)
         {
 
             try
@@ -77,19 +77,45 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<ProductImageEntity> UpdateProductImage(ProductImage productImage, string imageUrl)
+        public async Task<ProductImageEntity> GetProductImageAsync(int productVariantId)
         {
 
             try
             {
-                var existingProductImage = await _productImageRepository.GetOneAsync(
-                                    pi => pi.ProductVariantId == productImage.ProductVariantId &&
-                                    pi.ArticleNumber == productImage.ArticleNumber && pi.ImageId == productImage.ImageId);
+                var existingProductImage = await _productImageRepository.GetOneAsync(pi => pi.ProductVariantId == productVariantId);
 
                 if (existingProductImage != null)
                 {
-                    existingProductImage.Image.ImageUrl = imageUrl;
-                    return await _productImageRepository.UpdateAsync(existingProductImage);
+                    return existingProductImage;
+                }
+                else
+                    return null!;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in geting product image: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<ProductImageEntity> UpdateProductImageAsync(int productVariantId, string articleNumber, string imageUrl)
+        {
+
+            try
+            {
+                var existingImage = await _imageRepository.GetOneAsync(i => i.ImageUrl == imageUrl);
+                existingImage ??= await _imageRepository.AddAsync(new ImageEntity { ImageUrl = imageUrl });
+
+                var existingProductImage = await _productImageRepository.GetOneAsync(
+                                    pi => pi.ProductVariantId == productVariantId &&
+                                    pi.ArticleNumber == articleNumber);
+
+                if (existingProductImage != null)
+                {
+                    existingProductImage.ImageId = existingImage.Id;
+                    Func<ProductImageEntity, object> keySelector = p => p.Id;
+                    return await _productImageRepository.UpdateAsync(existingProductImage, keySelector);
                 }
                 else
                     return null!;
@@ -102,7 +128,7 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<bool> DeleteProductImage(ProductImage productImage)
+        public async Task<bool> DeleteProductImageAsync(ProductImage productImage)
         {
 
             try
