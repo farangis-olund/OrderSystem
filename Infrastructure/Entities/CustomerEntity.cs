@@ -25,6 +25,8 @@ public class CustomerEntity
     public string? PhoneNumber { get; set; }
     public virtual ICollection<CustomerOrderEntity> CustomerOrders { get; set; } = new HashSet<CustomerOrderEntity>();
 
+    
+    
     public static implicit operator CustomerEntity(Customer customer)
     {
         return new CustomerEntity

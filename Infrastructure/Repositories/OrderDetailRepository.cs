@@ -1,7 +1,9 @@
 ﻿
 using Infrastructure.Contexts;
 using Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
@@ -14,43 +16,45 @@ public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderD
 
     }
 
-    public override Task<OrderDetailEntity> AddAsync(OrderDetailEntity entity)
+    public async override Task<IEnumerable<OrderDetailEntity>> GetAllAsync()
     {
-        return base.AddAsync(entity);
+        try
+        {
+            List<OrderDetailEntity> productList = await _context.OrderDetails
+            .Include(x => x.CustomerOrder)
+            .Include (s => s.ProductVariant)
+            .ToListAsync();
+
+            return productList;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting entities of type {typeof(OrderDetailEntity).Name}: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return Enumerable.Empty<OrderDetailEntity>();
+        }
+
     }
 
-    public override Task<bool> Exist(Expression<Func<OrderDetailEntity, bool>> predicate)
+    public async override Task<OrderDetailEntity> GetOneAsync(Expression<Func<OrderDetailEntity, bool>> predicate, Func<Task<OrderDetailEntity>> createIfNotFound)
     {
-        return base.Exist(predicate);
-    }
+        try
+        {
+            var entity = await _context.OrderDetails
+                .Include(x => x.CustomerOrder)
+                .Include(s => s.ProductVariant)
+                .FirstOrDefaultAsync(predicate);
 
-    public override Task<IEnumerable<OrderDetailEntity>> GetAllAsync()
-    {
-        return base.GetAllAsync();
-    }
+            entity = await createIfNotFound.Invoke();
+            _context.Set<OrderDetailEntity>().Add(entity);
+            return entity;
 
-    public override Task<OrderDetailEntity> GetOneAsync(Expression<Func<OrderDetailEntity, bool>> predicate, Func<Task<OrderDetailEntity>> createIfNotFound)
-    {
-        return base.GetOneAsync(predicate, createIfNotFound);
-    }
-
-    public override Task<OrderDetailEntity> GetOneAsync(Expression<Func<OrderDetailEntity, bool>> predicate)
-    {
-        return base.GetOneAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(Expression<Func<OrderDetailEntity, bool>> predicate)
-    {
-        return base.RemoveAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(OrderDetailEntity entity)
-    {
-        return base.RemoveAsync(entity);
-    }
-
-    public override Task<OrderDetailEntity> UpdateAsync(OrderDetailEntity entity, Func<OrderDetailEntity, object> keySelector)
-    {
-        return base.UpdateAsync(entity, keySelector);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting entity of type {typeof(OrderDetailEntity).Name} by id: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
     }
 }

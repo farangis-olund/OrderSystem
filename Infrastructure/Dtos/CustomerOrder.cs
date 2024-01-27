@@ -10,15 +10,16 @@ namespace Infrastructure.Dtos
         public Guid CustomerId { get; set; }
         public string CustomerEmail { get; set; } = null!;
         public Customer Customer { get; set; } = null!;
-
+   
         public static implicit operator CustomerOrder(CustomerOrderEntity entity)
         {
             return new CustomerOrder
             {
                 TotalAmount = entity.TotalAmount,
                 Date = entity.Date,
-                CustomerId = entity.CustomerId
-              
+                CustomerId = entity.CustomerId,
+                Customer = entity.Customer
+                
             };
         }
     }

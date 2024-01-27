@@ -17,26 +17,38 @@ public class CustomerService
         _logger = logger;
     }
 
-    public async Task<CustomerEntity> AddCustomerAsync(Customer customer)
+    public async Task<CustomerEntity> AddCustomerAsync(CustomerEntity customer)
     {
-
         try
         {
-            var existingCustomer = await _customerRepository.Exist(c => c.Email == customer.Email);
+            var existingCustomer = await _customerRepository.ExistsAsync(c => c.Email == customer.Email);
 
-            if (!existingCustomer)
+            if (existingCustomer)
             {
-                var newCustomer = new CustomerEntity
-                {
-                   FirstName = customer.FirstName,
-                   LastName = customer.LastName,
-                   Email = customer.Email,
-                   PhoneNumber = customer.PhoneNumber
-                };
-                
-                return await _customerRepository.AddAsync(newCustomer);
+                return null!;
             }
+            var newCustomer = new CustomerEntity { 
+                Id = Guid.NewGuid(),
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Email = customer.Email,
+                PhoneNumber =customer.PhoneNumber};
+            
+            return await _customerRepository.AddAsync(newCustomer);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error in adding customer: {ex.Message}");
+            Debug.WriteLine(ex.Message);
             return null!;
+        }
+    }
+
+    public async Task<CustomerEntity> GetCustomerAsync(string email)
+    {
+        try
+        {
+            return await _customerRepository.GetOneAsync(c => c.Email == email);
            
         }
         catch (Exception ex)
@@ -47,67 +59,36 @@ public class CustomerService
         }
     }
 
-    public async Task<CustomerEntity> GetCustomerAsync(Customer customer)
+    public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
     {
-
         try
         {
-            var existingCustomer= await _customerRepository.GetOneAsync(c => c.Email == customer.Email);
+            var customerEntities = await _customerRepository.GetAllAsync(); 
 
-            if (existingCustomer != null)
-            {
-                return existingCustomer;
-            }
-            else
-            {
-                Debug.WriteLine("Customer does not exist!");
-                return null!;
-            }
+            return customerEntities.Select(entity => (Customer)entity).ToList();
+
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in geting customer: {ex.Message}");
+            _logger.LogError($"Error in getting all customers: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return null!;
         }
     }
 
-    public async Task<CustomerEntity> GetCustomerAsync(string email)
-    {
-
-        try
-        {
-            var existingCustomer = await _customerRepository.GetOneAsync(c => c.Email == email);
-
-            if (existingCustomer != null)
-            {
-                return existingCustomer;
-            }
-            else
-            {
-                Debug.WriteLine("Customer does not exist!");
-                return null!;
-            }
-
-
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error in adding product image: {ex.Message}");
-            Debug.WriteLine(ex.Message);
-            return null!;
-        }
-    }
-
-    public async Task<CustomerEntity> UpdateCustomerAsync(Customer customer)
+    public async Task<CustomerEntity> UpdateCustomerAsync(CustomerEntity customer)
     {
         try
         {
-            var existingCustomerOrder = await _customerRepository.Exist(c => c.Email == customer.Email);
-            if (existingCustomerOrder)
+            var existingCustomer = await _customerRepository.GetOneAsync(c => c.Email == customer.Email);
+                       
+            if (existingCustomer !=null)
             {
-                Func<CustomerEntity, object> keySelector = p => p.Id;
-                return await _customerRepository.UpdateAsync(customer, keySelector);
+                existingCustomer.FirstName = customer.FirstName;
+                existingCustomer.LastName = customer.LastName;
+                existingCustomer.Email = customer.Email;
+                existingCustomer.PhoneNumber = customer.PhoneNumber;
+                return await _customerRepository.UpdateAsync(c => c.Email == customer.Email, existingCustomer);
             }
             else
                 return null!;
@@ -120,26 +101,25 @@ public class CustomerService
         }
     }
 
-    public async Task<bool> DeleteCustomerAsync(Customer customer)
+    public async Task<bool> DeleteCustomerAsync(string email)
     {
         try
         {
+            var existingCustomer = await _customerRepository.ExistsAsync(x => x.Email == email);
 
-            var existingCustomerOrder = await _customerRepository.Exist(x => x.Equals(customer));
-
-            if (existingCustomerOrder)
+            if (existingCustomer)
             {
-                await _customerRepository.RemoveAsync(customer);
-                return true;
+                return await _customerRepository.RemoveAsync(c => c.Email== email);
             }
-            else
-                return false;
+
+            return false;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in adding customer order: {ex.Message}");
+            _logger.LogError($"Error in deleting customer: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return false;
         }
     }
+
 }

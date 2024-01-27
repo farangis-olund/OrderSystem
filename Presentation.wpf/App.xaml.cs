@@ -24,28 +24,35 @@ namespace Presentation.wpf
                 {
                     // presentation services
 
-                    services.AddSingleton<MainWindow>();
-                    services.AddSingleton<MainViewModel>();
+                    services.AddScoped<MainWindow>();
+                    services.AddScoped<MainViewModel>();
                     services.AddSingleton<ProductListViewModel>();
                     services.AddSingleton<ProductListView>();
                     services.AddSingleton<AddProductViewModel>();
                     services.AddSingleton<AddProductView>();
                     services.AddTransient<ProductUpdateViewModel>();
                     services.AddTransient<ProductUpdateView>();
-                    services.AddSingleton<DataTransferService>();
-
-
+                    services.AddSingleton<CustomerListView>();
+                    services.AddSingleton<CustomerListViewModel>();
+                    services.AddSingleton<AddCustomerView>();
+                    services.AddSingleton<AddCustomerViewModel>();
+                    services.AddSingleton<UpdateCustomerView>();
+                    services.AddSingleton<UpdateCustomerViewModel>();
+                    services.AddScoped<DataTransferService>();
+                    
                     services.AddSingleton<ObservableCollection<ProductDetail>>();
                     services.AddSingleton<ObservableCollection<ProductSize>>();
+                    services.AddSingleton<ObservableCollection<Currency>>();
 
+                    services.AddSingleton<ObservableCollection<Customer>>();
 
                     // datacontexts
 
-                    services.AddDbContext<ProductDataContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\customer_database_cf.mdf;Integrated Security=True;Connect Timeout=30", x => x.MigrationsAssembly(nameof(Infrastructure))));
-                    services.AddDbContext<CustomerOrderContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\customer_database_cf.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))));
+                    services.AddDbContext<ProductDataContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\productCatalog_database_df.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))),ServiceLifetime.Scoped);
+                    services.AddDbContext<CustomerOrderContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\customer_database_cf.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))), ServiceLifetime.Scoped);
 
                     // repositories
-                    
+
                     // product repositories
                     services.AddScoped<BrandRepository>();
                     services.AddScoped<CategoryRepository>();
@@ -54,12 +61,17 @@ namespace Presentation.wpf
                     services.AddScoped<CurrencyRepository>();
                     services.AddScoped<ImageRepository>();
                     services.AddScoped<ProductImageRepository>();
-                    services.AddScoped<ProductPriceRepository>();
+                    services.AddScoped<PriceRepository>();
                     services.AddScoped<ProductVariantRepository>();
                     services.AddScoped<SizeRepository>();
+                    
                     services.AddSingleton<Product>();
+                    services.AddSingleton<ProductVariant>();
                     services.AddSingleton<ProductDetail>();
                     services.AddSingleton<ProductSize>();
+                    services.AddSingleton<Currency>();
+
+                    services.AddSingleton<Customer>();
 
                     // customerOrders repositories
                     services.AddScoped<CustomerRepository>();
@@ -67,21 +79,24 @@ namespace Presentation.wpf
                     services.AddScoped<OrderDetailRepository>();
 
                     // services
-                    
+
                     // product
-                    services.AddSingleton<ProductService>();
-                    services.AddSingleton<ProductPresentationService>();
-                    services.AddSingleton<ProductVariantService>();
-                    services.AddSingleton<ProductPriceService>();
-                    services.AddSingleton<ProductImageService>();
-                    services.AddSingleton<ProductSizeService>();
-                    services.AddSingleton<ProductCategoryService>();
-
-
+                    services.AddScoped<BrandService>();
+                    services.AddScoped<CategoryService>();
+                    services.AddScoped<ColorService>();
+                    services.AddScoped<CurrencyService>();
+                    services.AddScoped<ImageService>();
+                    services.AddScoped<PriceService>();
+                    services.AddScoped<ProductImageService>();
+                    services.AddScoped<ProductVariantService>();
+                    services.AddScoped<ProductService>();
+                    services.AddScoped<ProductVariantService>();
+                    services.AddScoped<SizeService>();
+                    
                     // customer
-                    services.AddSingleton<CustomerService>();
-                    services.AddSingleton<CustomerOrderService>();
-                    services.AddSingleton<OrderDetailService>();
+                    services.AddScoped<CustomerService>();
+                    services.AddScoped<CustomerOrderService>();
+                    services.AddScoped<OrderDetailService>();
 
 
                 }).Build();

@@ -3,53 +3,53 @@ using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Infrastructure.Services
 {
     public class ProductImageService
     {
         private readonly ProductImageRepository _productImageRepository;
-        private readonly ImageRepository _imageRepository;
+        private readonly ImageService _imageService;
         private readonly ILogger<ProductImageService> _logger;
 
-        public ProductImageService(ProductImageRepository productImageRepository, ImageRepository imageRepository, ILogger<ProductImageService> logger)
+        public ProductImageService(ProductImageRepository productImageRepository, ImageService imageService, ILogger<ProductImageService> logger)
         {
             _productImageRepository = productImageRepository;
-            _imageRepository = imageRepository;
+            _imageService = imageService;
             _logger = logger;
         }
         
-        public async Task<bool> AddProductImageAsync(ProductImage productImage)
+        public async Task<ProductImageEntity> AddProductImageAsync(ProductVariantEntity productVariant, string imageUrl)
         {
 
             try
             {
-                var newImage = await _imageRepository.GetOneAsync(i => i.ImageUrl == productImage.ImageUrl);
-                newImage ??= await _imageRepository.AddAsync(new ImageEntity { ImageUrl = productImage.ImageUrl });
-
-                var existingImage = await _productImageRepository.Exist(
-                                    pi => pi.ProductVariantId == productImage.ProductVariantId && 
-                                    pi.ArticleNumber == productImage.ArticleNumber && 
-                                    pi.ImageId == newImage.Id);
+                var imageEntity = await _imageService.AddImageAsync(imageUrl);
+               
+                var existingImage = await _productImageRepository.ExistsAsync(
+                                    pi => pi.ProductVariantId == productVariant.Id && 
+                                    pi.ArticleNumber == productVariant.ArticleNumber && 
+                                    pi.ImageId == imageEntity.Id);
 
                 if (!existingImage)
                 {
-                    var newProductImage = new ProductImageEntity
+                    await _productImageRepository.AddAsync(new ProductImageEntity
                     {
-                        ProductVariantId = productImage.ProductVariantId,
-                        ArticleNumber = productImage.ArticleNumber,
-                        Image = newImage
-                    };
-                    await _productImageRepository.AddAsync(newProductImage);
+                        ProductVariantId = productVariant.Id,
+                        ArticleNumber = productVariant.ArticleNumber,
+                        ImageId = imageEntity.Id
+                    });
+                    
                 }
                     
-                return true;
+                return null!;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in adding product image: {ex.Message}");
                 Debug.WriteLine(ex.Message);
-                return false;
+                return null!;
             }
         }
 
@@ -58,16 +58,8 @@ namespace Infrastructure.Services
 
             try
             {
-                var existingProductImage = await _productImageRepository.GetOneAsync(
-                                    pi => pi.ProductVariantId == productVariantId &&
-                                    pi.ImageId == imageId);
-
-                if (existingProductImage !=null)
-                {
-                    return existingProductImage;
-                }
-                else
-                return null!;
+                return await _productImageRepository.GetOneAsync(pi => pi.ProductVariantId == productVariantId && pi.ImageId == imageId);
+   
             }
             catch (Exception ex)
             {
@@ -77,19 +69,13 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<ProductImageEntity> GetProductImageAsync(int productVariantId)
+        public async Task<ProductImageEntity> GetProductImageByProductVariantIdAsync(int productVariantId)
         {
 
             try
             {
-                var existingProductImage = await _productImageRepository.GetOneAsync(pi => pi.ProductVariantId == productVariantId);
+                return await _productImageRepository.GetOneAsync(pi => pi.ProductVariantId == productVariantId);
 
-                if (existingProductImage != null)
-                {
-                    return existingProductImage;
-                }
-                else
-                    return null!;
             }
             catch (Exception ex)
             {
@@ -99,26 +85,17 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<ProductImageEntity> UpdateProductImageAsync(int productVariantId, string articleNumber, string imageUrl)
+        public async Task<ProductImageEntity> UpdateProductImageAsync(ProductVariantEntity productVariant, string imageUrl)
         {
 
             try
             {
-                var existingImage = await _imageRepository.GetOneAsync(i => i.ImageUrl == imageUrl);
-                existingImage ??= await _imageRepository.AddAsync(new ImageEntity { ImageUrl = imageUrl });
-
-                var existingProductImage = await _productImageRepository.GetOneAsync(
-                                    pi => pi.ProductVariantId == productVariantId &&
-                                    pi.ArticleNumber == articleNumber);
-
-                if (existingProductImage != null)
-                {
-                    existingProductImage.ImageId = existingImage.Id;
-                    Func<ProductImageEntity, object> keySelector = p => p.Id;
-                    return await _productImageRepository.UpdateAsync(existingProductImage, keySelector);
-                }
-                else
-                    return null!;
+                var imageEntity = await _imageService.AddImageAsync(imageUrl);
+                var productImageEntity = await GetProductImageByProductVariantIdAsync(productVariant.Id);
+                productImageEntity.ImageId = imageEntity.Id;
+                return await _productImageRepository.UpdateAsync(pi => pi.ProductVariantId == productVariant.Id && 
+                                                            pi.ArticleNumber == productVariant.ArticleNumber, productImageEntity);
+               
             }
             catch (Exception ex)
             {
@@ -128,21 +105,13 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<bool> DeleteProductImageAsync(ProductImage productImage)
+        public async Task<bool> DeleteProductImageAsync(int productVariantId, string articleNumber, string imageUrl)
         {
 
             try
             {
-                var existingProductImage = await _productImageRepository.Exist(
-                                    pi => pi.ProductVariantId == productImage.ProductVariantId &&
-                                    pi.ArticleNumber == productImage.ArticleNumber && pi.ImageId == productImage.ImageId);
-
-                if (existingProductImage)
-                {
-                    return await _productImageRepository.RemoveAsync(productImage);
-                }
-                else
-                    return false;
+                return await _productImageRepository.RemoveAsync(pi => pi.ProductVariantId == productVariantId &&
+                              pi.ArticleNumber == articleNumber && pi.Image.ImageUrl == imageUrl);
             }
             catch (Exception ex)
             {

@@ -2,7 +2,6 @@
 using Infrastructure.Contexts;
 using Infrastructure.Entities;
 using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -14,44 +13,5 @@ namespace Infrastructure.Repositories
 
         }
 
-        public override Task<ColorEntity> AddAsync(ColorEntity entity)
-        {
-            return base.AddAsync(entity);
-        }
-
-        public override Task<bool> Exist(Expression<Func<ColorEntity, bool>> predicate)
-        {
-            return base.Exist(predicate);
-        }
-
-        public override Task<IEnumerable<ColorEntity>> GetAllAsync()
-        {
-            return base.GetAllAsync();
-        }
-
-        public override Task<ColorEntity> GetOneAsync(Expression<Func<ColorEntity, bool>> predicate)
-        {
-            return base.GetOneAsync(predicate);
-        }
-
-        public override Task<ColorEntity> GetOneAsync(Expression<Func<ColorEntity, bool>> predicate, Func<Task<ColorEntity>> createIfNotFound)
-        {
-            return base.GetOneAsync(predicate, createIfNotFound);
-        }
-
-        public override Task<bool> RemoveAsync(Expression<Func<ColorEntity, bool>> predicate)
-        {
-            return base.RemoveAsync(predicate);
-        }
-
-        public override Task<bool> RemoveAsync(ColorEntity entity)
-        {
-            return base.RemoveAsync(entity);
-        }
-
-        public override Task<ColorEntity> UpdateAsync(ColorEntity entity, Func<ColorEntity, object> keySelector)
-        {
-            return base.UpdateAsync(entity, keySelector);
-        }
     }
 }

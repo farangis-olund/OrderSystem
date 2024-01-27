@@ -11,6 +11,8 @@ public class ProductPrice
     public decimal DicountPercentage { get; set; }
     public string Code { get; set; } = null!;
     public string CurrencyName { get; set; }= null!;
+    public Currency Currency { get; set; } = null!;
+    public ProductVariant ProductVariant { get; set; } = null!;
 
     public static implicit operator ProductPrice(ProductPriceEntity entity)
     {
@@ -21,7 +23,9 @@ public class ProductPrice
             Price = entity.Price,
             DicountPercentage = entity.DicountPercentage ?? 0,
             DiscountPrice = entity.DiscountPrice ?? 0,
-            Code = entity.CurrencyCode
+            Code = entity.CurrencyCode,
+            Currency = entity.CurrencyCodeNavigation,
+            //ProductVariant = entity.ProductVariant
            
         };
     }

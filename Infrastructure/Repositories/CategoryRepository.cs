@@ -12,43 +12,5 @@ public class CategoryRepository : BaseRepository<ProductDataContext, CategoryEnt
     {
     }
 
-    public override Task<CategoryEntity> AddAsync(CategoryEntity entity)
-    {
-        return base.AddAsync(entity);
-    }
-
-    public override Task<bool> Exist(Expression<Func<CategoryEntity, bool>> predicate)
-    {
-        return base.Exist(predicate);
-    }
-
-    public override Task<IEnumerable<CategoryEntity>> GetAllAsync()
-    {
-        return base.GetAllAsync();
-    }
-
-    public override Task<CategoryEntity> GetOneAsync(Expression<Func<CategoryEntity, bool>> predicate)
-    {
-        return base.GetOneAsync(predicate);
-    }
-
-    public override Task<CategoryEntity> GetOneAsync(Expression<Func<CategoryEntity, bool>> predicate, Func<Task<CategoryEntity>> createIfNotFound)
-    {
-        return base.GetOneAsync(predicate, createIfNotFound);
-    }
-
-    public override Task<bool> RemoveAsync(Expression<Func<CategoryEntity, bool>> predicate)
-    {
-        return base.RemoveAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(CategoryEntity entity)
-    {
-        return base.RemoveAsync(entity);
-    }
-
-    public override Task<CategoryEntity> UpdateAsync(CategoryEntity entity, Func<CategoryEntity, object> keySelector)
-    {
-        return base.UpdateAsync(entity, keySelector);
-    }
+   
 }

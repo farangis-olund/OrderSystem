@@ -8,12 +8,12 @@ using System.Drawing;
 
 namespace Infrastructure.Services;
 
-public class ProductSizeService
+public class SizeService
 {
     private readonly SizeRepository _sizeRepository;
-    private readonly ILogger<ProductSizeService> _logger;
+    private readonly ILogger<SizeService> _logger;
 
-    public ProductSizeService(SizeRepository sizeRepository, ILogger<ProductSizeService> logger)
+    public SizeService(SizeRepository sizeRepository, ILogger<SizeService> logger)
     {
         _sizeRepository = sizeRepository;
         _logger = logger;
@@ -21,26 +21,14 @@ public class ProductSizeService
 
     public async Task<SizeEntity> AddSizeAsync(ProductSize productSize)
     {
-
         try
         {
-            var existingSize = await _sizeRepository.Exist(s => s.SizeType == productSize.SizeType &&
-                                                           s.SizeValue == productSize.SizeValue &&
-                                                           s.AgeGroup == productSize.AgeGroup);
-
-            if (!existingSize)
-            {
-                var newSize = new SizeEntity
-                {
-                    SizeType = productSize.SizeType,
-                    SizeValue = productSize.SizeValue,
-                    AgeGroup = productSize.AgeGroup
-                };
-
-                return await _sizeRepository.AddAsync(newSize);
-            }
-            return null!;
-
+            return await _sizeRepository.GetOneAsync(s => s.SizeType == productSize.SizeType &&
+                                                                 s.SizeValue == productSize.SizeValue &&
+                                                                 s.AgeGroup == productSize.AgeGroup)
+                            ?? await _sizeRepository.AddAsync(new SizeEntity { SizeType = productSize.SizeType, 
+                                                                               SizeValue = productSize.SizeValue, 
+                                                                               AgeGroup =productSize.AgeGroup });
         }
         catch (Exception ex)
         {
@@ -65,13 +53,13 @@ public class ProductSizeService
             }
             else
             {
-                Debug.WriteLine("Customer does not exist!");
+                Debug.WriteLine("Size does not exist!");
                 return null!;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in geting customer: {ex.Message}");
+            _logger.LogError($"Error in geting Size: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return null!;
         }
@@ -89,7 +77,7 @@ public class ProductSizeService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in geting customer: {ex.Message}");
+            _logger.LogError($"Error in geting Size: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return [];
         }
@@ -122,17 +110,16 @@ public class ProductSizeService
         }
     }
 
-    public async Task<SizeEntity> UpdateSizeAsync(ProductSize productSize)
+    public async Task<SizeEntity> UpdateSizeAsync(SizeEntity size)
     {
         try
         {
-            var existingSize = await _sizeRepository.Exist(s => s.SizeType == productSize.SizeType &&
-                                                                s.SizeValue == productSize.SizeValue &&
-                                                                s.AgeGroup == productSize.AgeGroup);
+            var existingSize = await _sizeRepository.ExistsAsync(s => s.SizeType == size.SizeType &&
+                                                                s.SizeValue == size.SizeValue &&
+                                                                s.AgeGroup == size.AgeGroup);
             if (existingSize)
             {
-                Func<SizeEntity, object> keySelector = p => p.Id;
-                return await _sizeRepository.UpdateAsync(productSize, keySelector);
+                 return await _sizeRepository.UpdateAsync(s => s.Id == size.Id, size);
             }
             else
                 return null!;
@@ -150,7 +137,7 @@ public class ProductSizeService
         try
         {
 
-            var existingSize = await _sizeRepository.Exist(x => x.Equals(productSize));
+            var existingSize = await _sizeRepository.ExistsAsync(x => x.Equals(productSize));
 
             if (existingSize)
             {

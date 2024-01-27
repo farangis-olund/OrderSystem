@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Infrastructure.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Entities;
@@ -17,4 +18,14 @@ public partial class CurrencyEntity
 
     [InverseProperty("CurrencyCodeNavigation")]
     public virtual ICollection<ProductPriceEntity> ProductPriceEntities { get; set; } = new List<ProductPriceEntity>();
+
+    public static implicit operator CurrencyEntity(Currency currency)
+    {
+        return new CurrencyEntity
+        {
+            Code = currency.Code,
+            CurrencyName = currency.CurrencyName
+
+        };
+    }
 }

@@ -14,43 +14,4 @@ public class ImageRepository : BaseRepository<ProductDataContext, ImageEntity>
 
     }
 
-    public override Task<ImageEntity> AddAsync(ImageEntity entity)
-    {
-        return base.AddAsync(entity);
-    }
-
-    public override Task<bool> Exist(Expression<Func<ImageEntity, bool>> predicate)
-    {
-        return base.Exist(predicate);
-    }
-
-    public override Task<IEnumerable<ImageEntity>> GetAllAsync()
-    {
-        return base.GetAllAsync();
-    }
-
-    public override Task<ImageEntity> GetOneAsync(Expression<Func<ImageEntity, bool>> predicate)
-    {
-        return base.GetOneAsync(predicate);
-    }
-
-    public override Task<ImageEntity> GetOneAsync(Expression<Func<ImageEntity, bool>> predicate, Func<Task<ImageEntity>> createIfNotFound)
-    {
-        return base.GetOneAsync(predicate, createIfNotFound);
-    }
-
-    public override Task<bool> RemoveAsync(Expression<Func<ImageEntity, bool>> predicate)
-    {
-        return base.RemoveAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(ImageEntity entity)
-    {
-        return base.RemoveAsync(entity);
-    }
-
-    public override Task<ImageEntity> UpdateAsync(ImageEntity entity, Func<ImageEntity, object> keySelector)
-    {
-        return base.UpdateAsync(entity, keySelector);
-    }
 }

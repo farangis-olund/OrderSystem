@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Infrastructure.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Entities;
@@ -36,4 +37,20 @@ public partial class ProductPriceEntity
     [ForeignKey("ProductVariantId")]
     [InverseProperty("ProductPriceEntities")]
     public virtual ProductVariantEntity ProductVariant { get; set; } = null!;
+
+    public static implicit operator ProductPriceEntity(ProductPrice productPrice)
+    {
+        return new ProductPriceEntity
+        {
+            ProductVariantId = productPrice.ProductVariantId,
+            ArticleNumber = productPrice.ArticleNumber,
+            Price = productPrice.Price,
+            DiscountPrice = productPrice.DiscountPrice,
+            DicountPercentage = productPrice.DicountPercentage,
+            CurrencyCode = productPrice.Code,
+            CurrencyCodeNavigation = productPrice.Currency,
+          
+
+        };
+    }
 }

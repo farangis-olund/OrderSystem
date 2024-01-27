@@ -8,92 +8,67 @@ namespace Infrastructure.Services;
 
 public class ProductService
 {
-    private readonly BrandRepository _brandRepository;
-    private readonly CategoryRepository _categoryRepository;
     private readonly ProductRepository _productRepository;
-    private readonly ProductVariantService _productVariantService;
-    private readonly ProductImageService _productImageService;
-    private readonly ImageRepository _imageRepository;
-    private readonly ProductPriceService _productPriceService;
-    private readonly ColorRepository _colorRepository;
+    private readonly BrandService _brandService;
+    private readonly CategoryService _categoryService;
     private readonly ILogger<ProductService> _logger;
 
-    public ProductService(BrandRepository brandRepository, 
-                          CategoryRepository categoryRepository, 
-                          ProductRepository productRepository,
-                          ProductImageService productImageService,
-                          ProductVariantService productVariantService,
-                          ImageRepository imageRepository,
-                          ProductPriceService productPriceService,
-                          ColorRepository colorRepository,
+    public ProductService(ProductRepository productRepository,
+                          BrandService brandService,
+                          CategoryService categoryService,
                           ILogger<ProductService> logger)
     {
-        _brandRepository = brandRepository;
-        _categoryRepository = categoryRepository;
+        
         _productRepository = productRepository;
-        _productImageService = productImageService;
-        _productVariantService = productVariantService;
-        _imageRepository = imageRepository;
-        _productPriceService = productPriceService;
-        _colorRepository = colorRepository;
+        _brandService = brandService;
+        _categoryService = categoryService;
         _logger = logger;
     }
 
-    public async Task<bool> AddProductAsync(Product product)
+    public async Task<ProductEntity> AddProductAsync(Product product)
     {
         try
         {
-            if (await _productRepository.Exist(x => x.ArticleNumber == product.ArticleNumber))
+            var brandEntity = await _brandService.AddBrandAsync(product.BrandName);
+            var categoryEntity = await _categoryService.AddCategoryAsync(product.CategoryName);
+
+            var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == product.ArticleNumber);
+            if (existingProduct != null)
             {
-                return false;
+                return null!;
             }
-            
-            var existingBrand = await _brandRepository.GetOneAsync(b => b.BrandName == product.BrandName);
-            existingBrand ??= await _brandRepository.AddAsync(new BrandEntity { BrandName = product.BrandName });
-
-            var existingCategory = await _categoryRepository.GetOneAsync(b => b.CategoryName == product.CategoryName);
-            existingCategory ??= await _categoryRepository.AddAsync(new CategoryEntity { CategoryName = product.CategoryName });
-
             var productEntity = new ProductEntity
             {
                 ArticleNumber = product.ArticleNumber,
                 ProductName = product.ProductName,
                 Material = product.Material,
                 ProductInfo = product.ProductInfo,
-                BrandId = existingBrand.Id,
-                CategoryId = existingCategory.Id
+                BrandId = brandEntity.Id,
+                CategoryId = categoryEntity.Id
             };
 
-            var result = await _productRepository.AddAsync(productEntity);
-            return result != null;
+            return await _productRepository.AddAsync(productEntity);
+           
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error adding product: {ex.Message}");
-            Debug.WriteLine(ex.Message);
-            return false;
+            Debug.WriteLine($"Error getting product: {ex.Message}");
+            return null!;
         }
         
     }
 
     public async Task<ProductEntity> GetProductByArticleAsync(string articleNumber)
     {
-
         try
         {
-            var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == articleNumber);
-
-            if (existingProduct != null)
-            {
-                return existingProduct;
-            }
-            else
-                return null!;
+            return await _productRepository.GetOneAsync(p => p.ArticleNumber == articleNumber);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in geting product: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            _logger.LogError($"Error getting product: {ex.Message}");
+            Debug.WriteLine($"Error getting product: {ex.Message}");
             return null!;
         }
     }
@@ -102,9 +77,7 @@ public class ProductService
     {
         try
         {
-            var existingProduct = await _productRepository.GetAllAsync();
-
-            return existingProduct;
+            return await _productRepository.GetAllAsync();
         }
         catch (Exception ex)
         {
@@ -114,25 +87,16 @@ public class ProductService
         }
     }
 
-    public async Task<Product> UpdateProductAsync(Product product)
+    public async Task<ProductEntity> UpdateProductAsync(ProductEntity product)
     {
-
         try
-        {
-            var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == product.ArticleNumber);
-
-            if (existingProduct != null)
-            {
-                object keySelector(ProductEntity p) => p.ArticleNumber;
-                return await _productRepository.UpdateAsync(product, keySelector);
-            }
-            else
-                return null!;
+        {            
+            return await _productRepository.UpdateAsync(p => p.ArticleNumber == product.ArticleNumber, product);
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error in updating product: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error in updating product: {ex.Message}");
             return null!;
         }
     }
@@ -142,20 +106,13 @@ public class ProductService
 
         try
         {
-            var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == articleNumber);
-            if (existingProduct != null)
-            {
-                await _productVariantService.DeleteProductVariantByArticleAsync(articleNumber);
-                await _productRepository.RemoveAsync(existingProduct);
-                return true;
-            }
-            else
-                return false;
+            await _productRepository.RemoveAsync(p => p.ArticleNumber == articleNumber);
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error in deleting product: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error in deleting product: {ex.Message}");
             return false;
         }
     }

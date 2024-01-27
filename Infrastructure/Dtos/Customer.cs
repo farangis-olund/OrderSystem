@@ -9,6 +9,7 @@ namespace Infrastructure.Dtos
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string? PhoneNumber { get; set; }
+        public List<CustomerOrder> Orders { get; set; } = [];
 
         public static implicit operator Customer(CustomerEntity entity)
         {
@@ -17,7 +18,8 @@ namespace Infrastructure.Dtos
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
                 Email = entity.Email,
-                PhoneNumber = entity.PhoneNumber
+                PhoneNumber = entity.PhoneNumber,
+               
             };
         }
 

@@ -9,88 +9,82 @@ namespace Infrastructure.Services;
 public class ProductVariantService
 {
     private readonly ProductVariantRepository _productVariantRepository;
-    
-    private readonly SizeRepository _sizeRepository;
-    private readonly ColorRepository _colorRepository;
-    private readonly ProductImageRepository _productImageRepository;
-    private readonly ProductPriceRepository _productPriceRepository;
+    private readonly ProductService _productService;
+    private readonly SizeService _sizeService;
+    private readonly ColorService _colorService;
     private readonly ILogger<ProductVariantService> _logger;
     public ProductVariantService ( ProductVariantRepository productVariantRepository,
-                                   SizeRepository sizeRepository,
-                                   ColorRepository colorRepository,
-                                   ProductImageRepository productImageRepository,
-                                   ProductPriceRepository productPriceRepository,
+                                   ProductService productService,
+                                   SizeService sizeService,
+                                   ColorService colorService,
                                    ILogger<ProductVariantService> logger)
     {
         _productVariantRepository = productVariantRepository;
-        _sizeRepository = sizeRepository;
-        _colorRepository = colorRepository;
-        _productImageRepository = productImageRepository;
-        _productPriceRepository = productPriceRepository;
+        _productService = productService;
+        _sizeService = sizeService;
+        _colorService = colorService;
         _logger = logger;
     }
 
-    public async Task<ProductVariantEntity> AddProductVariantAsync(ProductVariant productVariant)
+    public async Task<ProductVariantEntity> AddProductVariantAsync(ProductDetail productVariant)
     {
         try
         {
-            if (await _productVariantRepository.Exist(pv =>
-                pv.ArticleNumber == productVariant.ArticleNumber &&
+
+            var product = await _productService.GetProductByArticleAsync(productVariant.ArticleNumber);
+            product ??= await _productService.AddProductAsync(
+                    new Product
+                    {
+                        ArticleNumber = productVariant.ArticleNumber,
+                        ProductName = productVariant.ProductName,
+                        ProductInfo = productVariant.ProductInfo,
+                        Material = productVariant.Material,
+                        CategoryName = productVariant.CategoryName,
+                        BrandName = productVariant.BrandName
+                    });
+            
+            if (await _productVariantRepository.GetOneAsync(pv =>
+                pv.ArticleNumber == product.ArticleNumber &&
                 pv.Color.ColorName == productVariant.ColorName &&
-                pv.SizeId == productVariant.SizeId))
+                pv.Size.Id == productVariant.SizeId) != null)
+
             {
                 return null!;
             }
           
-            var color = await GetOrCreateColorAsync(productVariant.ColorName);
+            var color = await _colorService.AddColorAsync(productVariant.ColorName);
 
-            productVariant.ColorId = color.Id!;
-            
+            return await _productVariantRepository.AddAsync(new ProductVariantEntity
+            {
+                ArticleNumber = productVariant.ArticleNumber,
+                Quantity = productVariant.Quantity,
+                ColorId = color.Id,
+                SizeId = productVariant.SizeId
 
-            return await _productVariantRepository.AddAsync(productVariant);
+            });
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error adding product: {ex.Message}");
+            _logger.LogError($"Error adding product variant: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return null!;
         }
     }
 
-    public async Task<ProductVariantEntity> GetProductVariantAsync(ProductVariant productVariant)
+    public async Task<ProductVariantEntity> GetProductVariantAsync(ProductVariantEntity productVariant)
     {
         try
         {
-            var (articleNumber, colorId, sizeId) = (productVariant.ArticleNumber, productVariant.ColorId, productVariant.SizeId);
+            var (articleNumber, colorName) = (productVariant.ArticleNumber, productVariant.Color.ColorName);
 
-            if (string.IsNullOrEmpty(articleNumber) || colorId==0 || sizeId == 0)
+            if (string.IsNullOrEmpty(articleNumber) || string.IsNullOrEmpty(colorName))
             {
                 _logger.LogError("Invalid product variant parameters.");
                 return null!;
             }
                 
-            var existingProductVariant = await _productVariantRepository.GetOneAsync(pv =>
-                pv.ArticleNumber == articleNumber &&
-                pv.ColorId == colorId &&
-                pv.SizeId == sizeId);
-
-            return existingProductVariant;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error retrieving product variant: {ex.Message}");
-            Debug.WriteLine(ex.Message);
-            return null!;
-        }
-    }
-
-    public async Task<ProductVariantEntity> GetProductVariantByArticleNumberAsync(string articleNumber)
-    {
-        try
-        {
-            var existingProductVariant = await _productVariantRepository.GetOneAsync(pv => pv.ArticleNumber == articleNumber); 
-
-            return existingProductVariant;
+            return await _productVariantRepository.GetOneAsync(pv => pv.ArticleNumber == articleNumber &&  
+                                                                                     pv.Color.ColorName == colorName);
         }
         catch (Exception ex)
         {
@@ -104,9 +98,7 @@ public class ProductVariantService
     {
         try
         {
-            var existingProductVariant = await _productVariantRepository.GetOneAsync(pv => pv.Id == id);
-
-            return existingProductVariant;
+            return await _productVariantRepository.GetOneAsync(pv => pv.Id == id);
         }
         catch (Exception ex)
         {
@@ -120,9 +112,8 @@ public class ProductVariantService
     {
         try
         {
-            var existingProductVariant = await _productVariantRepository.GetAllAsync();
+           return await _productVariantRepository.GetAllAsync();
 
-            return existingProductVariant;
         }
         catch (Exception ex)
         {
@@ -132,18 +123,12 @@ public class ProductVariantService
         }
     }
 
-    public async Task<ProductVariantEntity> UpdateProductVariantAsync(ProductVariant productVariant)
+    public async Task<ProductVariant> UpdateProductVariantAsync(ProductVariantEntity productVariant)
     {
         try
         {
-            Func<ProductVariantEntity, object> keySelector = p => p.Id;
-            var result = await _productVariantRepository.UpdateAsync(productVariant, keySelector);
-            if (result != null)
-            {
-                return result;
-            }
-            else
-            return null!;
+            return await _productVariantRepository.UpdateAsync(pv => pv.Id == productVariant.Id, productVariant);
+          
         }
         catch (Exception ex)
         {
@@ -153,79 +138,18 @@ public class ProductVariantService
         }
     }
 
-    public async Task<bool> DeleteProductVariantByArticleAsync(string productArticle)
+    public async Task<bool> DeleteProductVariantByArticleAsync(ProductVariantEntity productVariant)
     {
         try
         {
-            var existingProductVariant = await _productVariantRepository.GetOneAsync(p => p.ArticleNumber == productArticle);
-
-            if (existingProductVariant != null)
-            {
-                await _productImageRepository.RemoveAsync(pi => pi.ArticleNumber == productArticle &&
-                                                          pi.ProductVariantId == existingProductVariant.Id);
-                await _productPriceRepository.RemoveAsync(pi => pi.ArticleNumber == productArticle &&
-                                                          pi.ProductVariantId == existingProductVariant.Id);
-                await _productVariantRepository.RemoveAsync(pv => pv.ArticleNumber == productArticle);
-                return true;
-            }
-            else
-                return false;
-            
+            return await _productVariantRepository.RemoveAsync(p => p.ArticleNumber == productVariant.ArticleNumber && p.Id == productVariant.Id);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error retrieving product variant: {ex.Message}");
+            _logger.LogError($"Error removing product variant: {ex.Message}");
             Debug.WriteLine(ex.Message);
             return false;
         }
     }
-
-    private async Task<SizeEntity> GetOrCreateSizeAsync(ProductSize size)
-    {
-        try
-        {
-            var existingSize = await _sizeRepository.GetOneAsync(s =>
-                s.SizeType == size.SizeType &&
-                s.SizeValue == size.SizeValue &&
-                s.AgeGroup == size.AgeGroup
-            );
-            
-            if (existingSize != null)
-                return existingSize;
-                        
-            return await _sizeRepository.AddAsync(new SizeEntity
-            {
-                SizeType = size.SizeType,
-                SizeValue = size.SizeValue,
-                AgeGroup = size.AgeGroup
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error getting or creating size: {ex.Message}");
-            Debug.WriteLine(ex.Message);
-            return null!;
-        }
-    }
-
-    private async Task<ColorEntity> GetOrCreateColorAsync(string colorName)
-    {
-        try
-        {
-            var existingColor = await _colorRepository.GetOneAsync(c => c.ColorName == colorName);
-
-            if (existingColor != null)
-                return existingColor;
-
-            return await _colorRepository.AddAsync(new ColorEntity { ColorName = colorName });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError($"Error getting or creating color: {ex.Message}");
-            Debug.WriteLine(ex.Message);
-            return null!;
-        }
-    }
-
 
 }

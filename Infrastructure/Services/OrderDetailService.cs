@@ -24,17 +24,17 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<OrderDetailEntity> AddOrderDetailAsync(OrderDetail orderDetail, int customerOrderId, int productVariantId)
+        public async Task<OrderDetailEntity> AddOrderDetailAsync(OrderDetailEntity orderDetail)
         {
             try
             {
-                var existingCustomerOrder = await _customerOrderService.GetCustomerOrderByIdAsync(customerOrderId);
+                var existingCustomerOrder = await _customerOrderService.AddCustomerOrderAsync(orderDetail.CustomerOrder);
 
-                var existingProductVariant = await _productVariantService.GetProductVariantByIdAsync(productVariantId);
+                var existingProductVariant = await _productVariantService.AddProductVariantAsync(orderDetail.ProductVariant);
                 
                 if(existingCustomerOrder != null &&  existingProductVariant != null)
                 {
-                    var orderDetailExists = await _orderDetailRepository.Exist(
+                    var orderDetailExists = await _orderDetailRepository.ExistsAsync(
                             od => od.CustomerOrderId == existingCustomerOrder.Id &&
                             od.ProductVariantId == existingProductVariant.Id);
 
@@ -61,22 +61,12 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<OrderDetailEntity> GetOrderDetailAsync(OrderDetail orderDetail)
+        public async Task<OrderDetailEntity> GetOrderDetailAsync(OrderDetailEntity orderDetail)
         {
 
             try
             {
-                var existingOrderDetail = await _orderDetailRepository.GetOneAsync(x => x.Equals(orderDetail));
-
-                if (existingOrderDetail != null)
-                {
-                    return existingOrderDetail;
-                }
-                else
-                {
-                    Debug.WriteLine("Order detail does not exist!");
-                    return null!;
-                }
+                return await _orderDetailRepository.GetOneAsync(x => x.OrderDetailId == orderDetail.OrderDetailId);
             }
             catch (Exception ex)
             {
@@ -86,24 +76,12 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<OrderDetailEntity> GetOrderDetailAsync(int id)
+        public async Task<IEnumerable<OrderDetailEntity>> GetAllOrderDetailsAsync()
         {
 
             try
             {
-                var existingOrderDetail = await _orderDetailRepository.GetOneAsync(c => c.OrderDetailId == id);
-
-                if (existingOrderDetail != null)
-                {
-                    return existingOrderDetail;
-                }
-                else
-                {
-                    Debug.WriteLine("Order detail does not exist!");
-                    return null!;
-                }
-
-
+                return await _orderDetailRepository.GetAllAsync();
             }
             catch (Exception ex)
             {
@@ -113,18 +91,17 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<OrderDetailEntity> UpdateOrderDetailAsync(OrderDetail orderDetail)
+
+        public async Task<OrderDetailEntity> UpdateOrderDetailAsync(OrderDetailEntity orderDetail)
         {
             try
             {
-                var existingOrderDetail = await _orderDetailRepository.Exist(x => x.Equals(orderDetail));
-                if (existingOrderDetail)
+                if (await _orderDetailRepository.ExistsAsync(x => x.OrderDetailId == orderDetail.OrderDetailId))
                 {
-                    Func<OrderDetailEntity, object> keySelector = p => p.OrderDetailId;
-                    return await _orderDetailRepository.UpdateAsync(orderDetail, keySelector);
+                    return await _orderDetailRepository.UpdateAsync(x => x.OrderDetailId == orderDetail.OrderDetailId, orderDetail);
                 }
-                else
-                    return null!;
+
+                return null!;
             }
             catch (Exception ex)
             {
@@ -134,20 +111,18 @@ namespace Infrastructure.Services
             }
         }
 
+
         public async Task<bool> DeleteOrderDetailAsync(OrderDetail orderDetail)
         {
             try
             {
-
-                var existingOrderDetail = await _orderDetailRepository.Exist(x => x.Equals(orderDetail));
-
-                if (existingOrderDetail)
+                if (await _orderDetailRepository.ExistsAsync(x => x.Equals(orderDetail)))
                 {
                     await _orderDetailRepository.RemoveAsync(orderDetail);
                     return true;
                 }
-                else
-                    return false;
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -156,5 +131,6 @@ namespace Infrastructure.Services
                 return false;
             }
         }
+
     }
 }

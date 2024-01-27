@@ -105,8 +105,8 @@ namespace Infrastructure.Migrations
                     b.HasOne("Infrastructure.Entities.CustomerEntity", "Customer")
                         .WithMany("CustomerOrders")
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_CustomerOrder_Customer");
 
                     b.Navigation("Customer");
                 });
@@ -114,10 +114,10 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Infrastructure.Entities.OrderDetailEntity", b =>
                 {
                     b.HasOne("Infrastructure.Entities.CustomerOrderEntity", "CustomerOrder")
-                        .WithMany("CustomerOrders")
+                        .WithMany("OrderDetails")
                         .HasForeignKey("CustomerOrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_OrderDetail_CustomerOrder");
 
                     b.Navigation("CustomerOrder");
                 });
@@ -129,7 +129,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Infrastructure.Entities.CustomerOrderEntity", b =>
                 {
-                    b.Navigation("CustomerOrders");
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

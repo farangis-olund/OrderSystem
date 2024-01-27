@@ -21,12 +21,12 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<CustomerOrderEntity> AddCustomerOrderAsync(CustomerOrder customerOrder, Customer customer)
+        public async Task<CustomerOrderEntity> AddCustomerOrderAsync(CustomerOrder customerOrder)
         {
             try
             {
-                var existingCustomer = await _customerService.GetCustomerAsync(customer.Email) 
-                    ?? await _customerService.AddCustomerAsync(customer);
+                var existingCustomer = await _customerService.GetCustomerAsync(customerOrder.Customer.Email) 
+                    ?? await _customerService.AddCustomerAsync(customerOrder.Customer);
 
                 if (existingCustomer == null)
                 {
@@ -38,7 +38,7 @@ namespace Infrastructure.Services
                 {
                     TotalAmount = customerOrder.TotalAmount,
                     Date = customerOrder.Date,
-                    Customer = existingCustomer
+                    CustomerId = existingCustomer.Id
                 };
                     
                 return await _customerOrderRepository.AddAsync(newCustomerOrder);
@@ -65,18 +65,26 @@ namespace Infrastructure.Services
             }
         }
 
-        public async Task<CustomerOrderEntity> UpdateCustomerOrderAsync(int id, CustomerOrder customerOrder)
+        public async Task<IEnumerable<CustomerOrderEntity>> GetAllCustomerOrdersAsync()
         {
+
             try
             {
-                var existingCustomerOrder = await _customerOrderRepository.Exist(co => co.Id == id);
-                if (existingCustomerOrder)
-                {
-                    Func<CustomerOrderEntity, object> keySelector = p => p.Id;
-                    return await _customerOrderRepository.UpdateAsync(customerOrder, keySelector);
-                }
-                else
-                    return null!;
+                return await _customerOrderRepository.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in geting Customer Orders: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<CustomerOrderEntity> UpdateCustomerOrderAsync(CustomerOrderEntity customerOrder)
+        {
+            try
+            {  
+                return await _customerOrderRepository.UpdateAsync(co => co.Id == customerOrder.Id, customerOrder);
             }
             catch (Exception ex)
             {
@@ -91,15 +99,14 @@ namespace Infrastructure.Services
             try
             {
               
-                var existingCustomerOrder = await _customerOrderRepository.Exist(x => x.Equals(customerOrder));
+                var existingCustomerOrder = await _customerOrderRepository.ExistsAsync(x => x.Equals(customerOrder));
 
                 if (existingCustomerOrder)
                 {
                     await _customerOrderRepository.RemoveAsync(customerOrder);
-                    return true;
                 }
-                else
-                    return false;
+                
+                return existingCustomerOrder;
             }
             catch (Exception ex)
             {

@@ -95,19 +95,13 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
     }
 
-    public virtual async Task<TEntity> UpdateAsync(TEntity entity, Func<TEntity, object> keySelector)
+    public virtual async Task<TEntity> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity entity)
     {
         try
         {
-            var keyValue = keySelector(entity);
-
-            var existingEntity = _context.Set<TEntity>().Local.FirstOrDefault(e => keySelector(e).Equals(keyValue));
-            if (existingEntity != null)
-            {
-                _context.Entry(existingEntity).State = EntityState.Detached;
-            }
-
-            _context.Entry(entity).State = EntityState.Modified;
+            
+            var updateEntity = _context.Set<TEntity>().FirstOrDefault(predicate);
+            _context.Entry(updateEntity!).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
@@ -118,7 +112,6 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
             return null!;
         }
     }
-
 
     public virtual async Task<bool> RemoveAsync(Expression<Func<TEntity, bool>> predicate)
     {
@@ -161,7 +154,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
     }
 
-    public virtual async Task<bool> Exist(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate)
     {
         try
         {

@@ -33,13 +33,5 @@ public partial class CategoryEntity
 
         };
     }
-
-    public static implicit operator CategoryEntity(ProductDetail productDetail)
-    {
-        return new CategoryEntity
-        {
-            CategoryName = productDetail.CategoryName,
-         
-        };
-    }
+    
 }

@@ -12,25 +12,17 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MaxWidth="150"/>
-            <ColumnDefinition/>
+              <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        
-        <StackPanel Grid.Column="0" Margin="0,90,0,0">
-            <Button x:Name="DashboardButton" Content="Dashboard" Height="58" Background="#71639C" Foreground="Beige" Command="{Binding NavigateToProductListCommand}"/>
-            <Button x:Name="OrderButton" Content="Orders" Height="58" Background="#71639C"  Foreground="Beige"/>
-            <Button Content="Products" Height="58" Background="#71639C"  Foreground="Beige" Command="{Binding NavigateToProductListCommand}"/>
-            <Button x:Name="CustmersButton" Content="Customers" Height="58" Background="#71639C"  Foreground="Beige" />
-            <Button x:Name="LogoutButton" Content="Logout" Height="58" Background="#71639C"  Foreground="Beige"/>
-        </StackPanel>
+       
 
-        <Grid Grid.Column="1" Margin="16">
+        <Grid Grid.Column="0" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="72"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid>
-                <TextBlock Text="Add New Product"  VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Margin="70,0,0,0"/>
+                <TextBlock Text="Sale Managment System"  VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Margin="70,0,0,0"/>
                 <Button Grid.Column="1" Content="Add Product"  HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding AddProductCommand}" FontWeight="SemiBold" Padding="10,5" BorderThickness="1.5" BorderBrush="#71639C" Background="Transparent"/>
             </Grid>
 
@@ -94,7 +86,12 @@
                                 </ComboBox.ItemContainerStyle>
                             </ComboBox>
                         </StackPanel>
-
+                        
+                        <StackPanel Margin="0,0,0,10">
+                            <Label Content="Quantity" Foreground="Gray"/>
+                            <TextBox Text="{Binding Product.Quantity}" Margin="0,0,0,0" Height="25"/>
+                        </StackPanel>
+                        
                         <StackPanel Margin="0,0,0,10">
                             <Label Content="Price" Foreground="Gray"/>
                             <TextBox Text="{Binding Product.Price}" Margin="0,0,0,0" Height="25"/>
@@ -102,7 +99,23 @@
 
                         <StackPanel Margin="0,0,0,10">
                             <Label Content="Currency" Foreground="Gray"/>
-                            <TextBox Text="{Binding Product.Currency}" Margin="0,0,0,0" Height="25"/>
+                            <ComboBox ItemsSource="{Binding CurrencyList}"
+                                SelectedItem="{Binding SelectedCurrency, Mode=TwoWay}"
+                                Margin="0,0,0,10">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Code}" FontStyle="Italic"/>
+                                            <TextBlock Text="{Binding CurrencyName}" FontWeight="Bold"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                            </ComboBox>
                         </StackPanel>
 
                         <StackPanel Margin="0,0,0,10">

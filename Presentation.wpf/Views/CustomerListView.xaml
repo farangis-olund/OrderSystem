@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="Presentation.wpf.Views.CustomerListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Presentation.wpf.Views"
+             xmlns:views="clr-namespace:Presentation.wpf.Views"
+             xmlns:viewmodels ="clr-namespace:Presentation.wpf.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:CustomerListViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="72"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <TextBlock Text="Sale Managment System"  VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Margin="70,0,0,0"/>
+                <Button Grid.Column="1" Content="+ Customer"  HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding NavigateToAddCustomerCommand}" FontWeight="SemiBold" Padding="10,5" BorderThickness="1.5" BorderBrush="#71639C" Background="Transparent"/>
+            </Grid>
+
+            <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20,0,0,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto">
+
+                    <ListBox ItemsSource="{Binding CustomerList}" SelectedItem="{Binding SelectedCustomer}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="Black" BorderThickness="1" Margin="5" Width="560" Height="80">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="180"/>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="80"/>
+
+                                        </Grid.ColumnDefinitions>
+                                       
+                                        <StackPanel Grid.Column="0" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="left">
+                                            <TextBlock>
+                                            <Run Text="{Binding FirstName}" />
+                                            <Run Text="{Binding LastName}" />
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="left">
+                                            <TextBlock>
+                                            <Run Text="{Binding Email}" FontWeight="SemiBold"/>
+                                            <LineBreak />
+                                            <Run Text="{Binding PhoneNumber}" FontWeight="SemiBold"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <!-- Column 3: OrderButton on the right -->
+                                        <Button Grid.Column="2" Content="Detail" Width="60" Height="30" 
+                                            Command="{Binding DataContext.NavigateToUpdateCommand, 
+                                            RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
+                                            CommandParameter="{Binding}"  Margin="5" Padding="2"/>
+                                        <Button Grid.Column="3" Content="Delete" Width="60" Height="30" 
+                                            Command="{Binding DataContext.RemoveCustomerCommand, 
+                                            RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
+                                            CommandParameter="{Binding}"  Margin="5" Padding="2"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+
+                </ScrollViewer>
+            </Grid>
+
+        </Grid>
+
+
+
+
+
+
+    </Grid>
+</UserControl>

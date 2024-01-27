@@ -9,6 +9,8 @@ namespace Infrastructure.Dtos
         public string ArticleNumber { get; set; } = null!;
         public int ImageId { get; set; }
         public string ImageUrl { get; set; } = null!;
+        public Image Image { get; set; } = null!;
+        public ProductVariant ProductVariant { get; set; } = null!;
 
         public static implicit operator ProductImage(ProductImageEntity entity)
         {
@@ -16,7 +18,8 @@ namespace Infrastructure.Dtos
             {
                 ProductVariantId = entity.ProductVariantId,
                 ArticleNumber = entity.ArticleNumber,
-                ImageId = entity.ImageId
+                ImageId = entity.ImageId,
+                Image = entity.Image
 
             };
         }

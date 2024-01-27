@@ -17,11 +17,11 @@ public partial class BrandEntity
     [InverseProperty("Brand")]
     public virtual ICollection<ProductEntity> ProductEntities { get; set; } = new List<ProductEntity>();
 
-    public static implicit operator BrandEntity(ProductDetail productDetail)
+    public static implicit operator BrandEntity(Brand brand)
     {
         return new BrandEntity
         {
-            BrandName = productDetail.BrandName
+            BrandName = brand.BrandName
 
         };
     }

@@ -43,7 +43,9 @@ public partial class ProductEntity
             Material = product.Material,
             ProductInfo = product.ProductInfo,
             CategoryId = product.CategoryId,
-            BrandId = product.BrandId
+            BrandId = product.BrandId,
+            Brand = product.Brand,
+            Category = product.Category
 
         };
     }

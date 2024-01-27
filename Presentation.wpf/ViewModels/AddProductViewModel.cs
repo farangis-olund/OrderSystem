@@ -12,29 +12,33 @@ namespace Presentation.wpf.ViewModels;
 public partial class AddProductViewModel : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ProductService _productService;
     private readonly ProductVariantService _productVariantService;
-    private readonly ProductSizeService _productSizeService;
+    private readonly SizeService _productSizeService;
     private readonly ProductImageService _productImageService;
-    private readonly ProductPriceService _productPriceService;
+    private readonly PriceService _productPriceService;
+    private readonly CurrencyService _currencyService;
     public AddProductViewModel(IServiceProvider serviceProvider,
-                                ProductService productService,
                                 ProductVariantService productVariantService,
-                                ProductSizeService productSizeService,
+                                SizeService productSizeService,
                                 ProductImageService productImageService,
-                                ProductPriceService productPriceService,
+                                PriceService productPriceService,
+                                CurrencyService currencyService,
                                 ObservableCollection<ProductSize> sizeList,
-                                ProductSize selectedSize)
+                                ProductSize selectedSize, 
+                                ObservableCollection<Currency> currencyList,
+                                Currency selectedCurrency)
     {
         _serviceProvider = serviceProvider;
-        _productService = productService;
         _productVariantService = productVariantService;
         _productSizeService = productSizeService;
         _productImageService = productImageService;
         _productPriceService = productPriceService;
+        _currencyService = currencyService;
         _sizeList = sizeList;
         _selectedSize = selectedSize;
-        _ = AddSizeList();
+        _currencyList = currencyList;
+        _selectedCurrency = selectedCurrency;
+        _ = AddSizeAndCurrencyListAsync();
     }
 
     [ObservableProperty]
@@ -46,9 +50,16 @@ public partial class AddProductViewModel : ObservableObject
    
     [ObservableProperty]
     private ObservableCollection<ProductSize> _sizeList;
-      
+
+    [ObservableProperty]
+    private Currency _selectedCurrency;
+
+
+    [ObservableProperty]
+    private ObservableCollection<Currency> _currencyList;
+
     [RelayCommand]
-    private async Task AddProduct()
+    private async Task AddProductAsync()
     {
         if (SelectedSize == null)
         {
@@ -69,25 +80,20 @@ public partial class AddProductViewModel : ObservableObject
             Product.SizeId = size.Id;
         }
 
-        await _productService.AddProductAsync(Product);
-        var newProductVariant = await _productVariantService.AddProductVariantAsync(Product);
-        
-        var newProductImage = new ProductImage
+        if (SelectedCurrency == null)
         {
-            ProductVariantId = newProductVariant.Id,
-            ArticleNumber = newProductVariant.ArticleNumber,
-            ImageUrl = Product.ImageUrl
-        };
-        await _productImageService.AddProductImageAsync(newProductImage);
+            MessageBox.Show("Select the currency of the product then add product!");
+            return;
+        } else
+        {
+            var currency = await _currencyService.AddCurrencyAsync(SelectedCurrency.Code, SelectedCurrency.CurrencyName);
+            Product.CurrencyCode = currency.Code;
 
-        var newProductPrice = new ProductPrice
-        {
-            ProductVariantId = newProductVariant.Id,
-            ArticleNumber = newProductVariant.ArticleNumber,
-            Price = Product.Price,
-            Code = Product.Currency
-        };
-        await _productPriceService.AddProductPriceAsync(newProductPrice);
+        }
+        
+        var productVariant = await _productVariantService.AddProductVariantAsync(Product);
+        await _productImageService.AddProductImageAsync(productVariant, Product.ImageUrl);
+        await _productPriceService.AddPriceAsync(productVariant, Product);
         MessageBox.Show("Product sussessfully added!");
         NavigateToProductList();
     }
@@ -95,15 +101,19 @@ public partial class AddProductViewModel : ObservableObject
     [RelayCommand]
     private void NavigateToProductList()
     {
+        Product = new ProductDetail();
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         var productListViewModel = _serviceProvider.GetRequiredService<ProductListViewModel>();
         _ = productListViewModel.LoadProductsAsync();
         mainViewModel.CurrentViewModel = productListViewModel;
     }
 
-    private async Task AddSizeList()
+    private async Task AddSizeAndCurrencyListAsync()
     {
-        var sizes = await _productSizeService.GetAllSizesAsync() ;
+        var sizes = await _productSizeService.GetAllSizesAsync();
         SizeList = new ObservableCollection<ProductSize>(sizes.Select(entity => (ProductSize)entity));
+
+        var currencies = await _currencyService.GetAllCurrenciesAsync();
+        CurrencyList = new ObservableCollection<Currency>(currencies.Select(entity => (Currency)entity));
     }
 }

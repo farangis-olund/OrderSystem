@@ -1,6 +1,8 @@
 ﻿using Infrastructure.Contexts;
 using Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
@@ -13,43 +15,51 @@ public class ProductVariantRepository : BaseRepository<ProductDataContext, Produ
 
     }
 
-    public override Task<ProductVariantEntity> AddAsync(ProductVariantEntity entity)
+    public async override Task<IEnumerable<ProductVariantEntity>> GetAllAsync()
     {
-        return base.AddAsync(entity);
+        try
+        {
+            List<ProductVariantEntity> productVariantList = await _context.ProductVariantEntities
+               .Include(i => i.ArticleNumberNavigation)
+               .Include(i => i.Color)
+               .Include(i => i.Size)
+               .Include(i => i.ArticleNumberNavigation.Brand)
+               .Include(i => i.ArticleNumberNavigation.Category)
+               .Include(i => i.ProductImageEntities)
+                   .ThenInclude(pi => pi.Image)
+               .Include(i => i.ProductPriceEntities)
+                  .ThenInclude(pp => pp.CurrencyCodeNavigation)
+               .ToListAsync();
+
+            return productVariantList;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting entities of type {typeof(ProductVariantEntity).Name}: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return Enumerable.Empty<ProductVariantEntity>();
+        }
     }
 
-    public override Task<bool> Exist(Expression<Func<ProductVariantEntity, bool>> predicate)
+    public async override Task<ProductVariantEntity> GetOneAsync(Expression<Func<ProductVariantEntity, bool>> predicate, Func<Task<ProductVariantEntity>> createIfNotFound)
     {
-        return base.Exist(predicate);
-    }
+        try
+        {
+            var entity = await _context.ProductVariantEntities
+               .Include(i => i.Color)
+               .Include(i => i.Size)
+               .FirstOrDefaultAsync(predicate);
 
-    public override Task<IEnumerable<ProductVariantEntity>> GetAllAsync()
-    {
-        return base.GetAllAsync();
-    }
+            entity = await createIfNotFound.Invoke();
+            _context.Set<ProductVariantEntity>().Add(entity);
+            return entity;
 
-    public override Task<ProductVariantEntity> GetOneAsync(Expression<Func<ProductVariantEntity, bool>> predicate, Func<Task<ProductVariantEntity>> createIfNotFound)
-    {
-        return base.GetOneAsync(predicate, createIfNotFound);
-    }
-
-    public override Task<ProductVariantEntity> GetOneAsync(Expression<Func<ProductVariantEntity, bool>> predicate)
-    {
-        return base.GetOneAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(Expression<Func<ProductVariantEntity, bool>> predicate)
-    {
-        return base.RemoveAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(ProductVariantEntity entity)
-    {
-        return base.RemoveAsync(entity);
-    }
-
-    public override Task<ProductVariantEntity> UpdateAsync(ProductVariantEntity entity, Func<ProductVariantEntity, object> keySelector)
-    {
-        return base.UpdateAsync(entity, keySelector);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting entity of type {typeof(ProductVariantEntity).Name} by id: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
     }
 }

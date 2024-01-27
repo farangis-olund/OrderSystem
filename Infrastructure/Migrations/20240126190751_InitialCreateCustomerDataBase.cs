@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateCustomerOrderTables : Migration
+    public partial class InitialCreateCustomerDataBase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,11 +40,10 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_CustomerOrders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CustomerOrders_Customers_CustomerId",
+                        name: "FK_CustomerOrder_Customer",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -61,11 +60,10 @@ namespace Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_OrderDetails", x => x.OrderDetailId);
                     table.ForeignKey(
-                        name: "FK_OrderDetails_CustomerOrders_CustomerOrderId",
+                        name: "FK_OrderDetail_CustomerOrder",
                         column: x => x.CustomerOrderId,
                         principalTable: "CustomerOrders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

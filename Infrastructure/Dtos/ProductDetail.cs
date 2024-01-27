@@ -1,4 +1,5 @@
 ﻿
+using Infrastructure.Entities;
 using System.Drawing;
 
 namespace Infrastructure.Dtos
@@ -14,31 +15,54 @@ namespace Infrastructure.Dtos
         public string BrandName { get; set; } = null!;
         public int BrandId { get; set; } 
         public string ImageUrl { get; set; } = null!;
+        public int ColorId { get; set; }
         public string ColorName { get; set; } = null!;
         public string SizeValue { get; set; } = null!;
         public int SizeId { get; set; }
         public decimal Price { get; set; }
-        public string Currency { get; set; } = null!;
+        public decimal DiscountPrice { get; set; }
+        public decimal DicountPercentage { get; set; }
+        public string CurrencyCode { get; set; } = null!;
+        public string CurrencyName { get; set; } = null!;
         public string CategoryName { get; set; } = null!;
         public int CategoryId { get; set; }
-        public ICollection<Size> Size { get; set; } = new List<Size>();
+        public Color Color { get; set; } = null!;
+        public ProductPrice ProductPrice { get; set; } = null!;
+        public ProductSize Size { get; set; } = null!;
+        public Product Product { get; set; } = null!;
+        public Brand Brand { get; set; } = null!;
+        public Category Category { get; set; } = null!;
+        public List<ProductImage> ProductImages { get; set; } = null!;
+        public Currency Currency { get; set; } = null!;
 
-        
-        public static implicit operator ProductDetail(Product product)
+
+        public static implicit operator ProductDetail(ProductVariantEntity entity)
         {
             return new ProductDetail
             {
-                ArticleNumber = product.ArticleNumber,
-                ProductName = product.ProductName,
-                Material = product.Material,
-                ProductInfo = product.ProductInfo,
-                BrandName = product.BrandName,
-                CategoryName = product.CategoryName,
-                CategoryId = product.CategoryId
-
+                ArticleNumber = entity.ArticleNumber,
+                Quantity = entity.Quantity,
+                ProductName = entity.ArticleNumberNavigation.ProductName,
+                ImageUrl = entity.ProductImageEntities.Select(pi => pi.Image).Select(img => img.ImageUrl).FirstOrDefault()!,
+                Price = entity.ProductPriceEntities.Select(pi => pi.Price).FirstOrDefault()!,
+                ProductInfo = entity.ArticleNumberNavigation.ProductInfo!,
+                Material = entity.ArticleNumberNavigation.Material!,
+                BrandName = entity.ArticleNumberNavigation.Brand.BrandName!,
+                CategoryName = entity.ArticleNumberNavigation.Category.CategoryName,
+                ColorId = entity.ColorId,
+                ColorName = entity.Color.ColorName,
+                SizeValue = entity.Size.SizeValue!,
+                CurrencyCode =entity.ProductPriceEntities.Select(c => c.CurrencyCode).FirstOrDefault()!,
+                Size = entity.Size,
+                Color = entity.Color,
+                Product = entity.ArticleNumberNavigation,
+                Brand = entity.ArticleNumberNavigation?.Brand!,
+                Category = entity.ArticleNumberNavigation?.Category!,
+                ProductImages = entity.ProductImageEntities?.Select(pi => (ProductImage)pi).ToList() ?? new List<ProductImage>(),
+                ProductPrice = entity.ProductPriceEntities?.FirstOrDefault() ?? new ProductPrice(),
+                Currency = entity.ProductPriceEntities?.FirstOrDefault()?.CurrencyCodeNavigation ?? new Currency()
             };
         }
-
 
     }
 }

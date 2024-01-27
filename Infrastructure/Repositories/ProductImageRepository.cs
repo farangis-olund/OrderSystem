@@ -1,7 +1,9 @@
 ﻿
 using Infrastructure.Contexts;
 using Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
@@ -14,43 +16,43 @@ public class ProductImageRepository : BaseRepository<ProductDataContext, Product
 
     }
 
-    public override Task<ProductImageEntity> AddAsync(ProductImageEntity entity)
+    public async override Task<IEnumerable<ProductImageEntity>> GetAllAsync()
     {
-        return base.AddAsync(entity);
+        try
+        {
+            List<ProductImageEntity> productImageList = await _context.ProductImageEntities
+            .Include(i => i.Image)
+            .ToListAsync();
+
+            return productImageList;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting entities of type {typeof(ProductImageEntity).Name}: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return Enumerable.Empty<ProductImageEntity>();
+        }
     }
 
-    public override Task<bool> Exist(Expression<Func<ProductImageEntity, bool>> predicate)
+    public async override Task<ProductImageEntity> GetOneAsync(Expression<Func<ProductImageEntity, bool>> predicate, Func<Task<ProductImageEntity>> createIfNotFound)
     {
-        return base.Exist(predicate);
+        try
+        {
+            var entity = await _context.ProductImageEntities
+                 .Include(i => i.Image)
+                 .FirstOrDefaultAsync(predicate);
+
+            entity = await createIfNotFound.Invoke();
+            _context.Set<ProductImageEntity>().Add(entity);
+            return entity;
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting entity of type {typeof(ProductImageEntity).Name} by id: {ex.Message}");
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
     }
 
-    public override Task<IEnumerable<ProductImageEntity>> GetAllAsync()
-    {
-        return base.GetAllAsync();
-    }
-
-    public override Task<ProductImageEntity> GetOneAsync(Expression<Func<ProductImageEntity, bool>> predicate, Func<Task<ProductImageEntity>> createIfNotFound)
-    {
-        return base.GetOneAsync(predicate, createIfNotFound);
-    }
-
-    public override Task<ProductImageEntity> GetOneAsync(Expression<Func<ProductImageEntity, bool>> predicate)
-    {
-        return base.GetOneAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(Expression<Func<ProductImageEntity, bool>> predicate)
-    {
-        return base.RemoveAsync(predicate);
-    }
-
-    public override Task<bool> RemoveAsync(ProductImageEntity entity)
-    {
-        return base.RemoveAsync(entity);
-    }
-
-    public override Task<ProductImageEntity> UpdateAsync(ProductImageEntity entity, Func<ProductImageEntity, object> keySelector)
-    {
-        return base.UpdateAsync(entity, keySelector);
-    }
 }

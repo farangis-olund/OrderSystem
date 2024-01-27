@@ -39,16 +39,24 @@ public partial class ProductVariantEntity
     [InverseProperty("ProductVariantEntities")]
     public virtual SizeEntity Size { get; set; } = null!;
 
-    public static implicit operator ProductVariantEntity(ProductVariant entity)
+    public static implicit operator ProductVariantEntity(ProductDetail productVariant)
     {
         return new ProductVariantEntity
         {
-            ArticleNumber = entity.ArticleNumber,
-            Quantity = entity.Quantity,
-            SizeId = entity.SizeId,
-            ColorId = entity.ColorId,
-            
-
+            ArticleNumber = productVariant.ArticleNumber,
+            Quantity = productVariant.Quantity,
+            SizeId = productVariant.SizeId,
+            ColorId = productVariant.ColorId,
+            Size = productVariant.Size,
+            Color = productVariant.Color,
+            ArticleNumberNavigation = productVariant.Product
+   
         };
+
+      
     }
+
+
+
 }
+

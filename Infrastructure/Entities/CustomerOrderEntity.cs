@@ -19,9 +19,12 @@ public class CustomerOrderEntity
     [ForeignKey(nameof(CustomerEntity))]
     public Guid CustomerId { get; set; }
 
+
+    [ForeignKey("CustomerId")]
+    [InverseProperty("CustomerOrders")]
     public virtual CustomerEntity Customer { get; set; } = null!;
 
-    public virtual ICollection<OrderDetailEntity> CustomerOrders { get; set; } = new HashSet<OrderDetailEntity>();
+    public virtual ICollection<OrderDetailEntity> OrderDetails { get; set; } = new HashSet<OrderDetailEntity>();
 
     public static implicit operator CustomerOrderEntity(CustomerOrder customerOrder)
     {
@@ -29,7 +32,9 @@ public class CustomerOrderEntity
         {
             TotalAmount = customerOrder.TotalAmount,
             Date = customerOrder.Date,
-            CustomerId = customerOrder.CustomerId
+            CustomerId = customerOrder.CustomerId,
+            Customer = customerOrder.Customer
+
 
         };
     }
