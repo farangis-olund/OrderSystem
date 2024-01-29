@@ -8,9 +8,9 @@ namespace Infrastructure.Services;
 public class CurrencyService
 {
     private readonly CurrencyRepository _currencyRepository;
-    private readonly ILogger<ProductService> _logger;
+    private readonly ILogger<CurrencyService> _logger;
 
-    public CurrencyService(CurrencyRepository currencyRepository, ILogger<ProductService> logger)
+    public CurrencyService(CurrencyRepository currencyRepository, ILogger<CurrencyService> logger)
     {
         _currencyRepository = currencyRepository;
         _logger = logger;
@@ -82,8 +82,14 @@ public class CurrencyService
     {
         try
         {
-            await _currencyRepository.RemoveAsync(b => b.Code == code);
-            return true;
+            var result = await _currencyRepository.GetOneAsync(b => b.Code == code);
+            if (result != null) 
+            {
+                await _currencyRepository.RemoveAsync(b => b.Code == code);
+                return true;
+            } else 
+                return false; 
+            
         }
         catch (Exception ex)
         {

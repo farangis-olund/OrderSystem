@@ -24,32 +24,34 @@ namespace Presentation.wpf
                 {
                     // presentation services
 
-                    services.AddScoped<MainWindow>();
-                    services.AddScoped<MainViewModel>();
-                    services.AddSingleton<ProductListViewModel>();
-                    services.AddSingleton<ProductListView>();
-                    services.AddSingleton<AddProductViewModel>();
-                    services.AddSingleton<AddProductView>();
+                    services.AddSingleton<MainWindow>();
+                    services.AddSingleton<MainViewModel>();
+                    services.AddTransient<ProductListViewModel>();
+                    services.AddTransient<ProductListView>();
+                    services.AddTransient<AddProductViewModel>();
+                    services.AddTransient<AddProductView>();
                     services.AddTransient<ProductUpdateViewModel>();
                     services.AddTransient<ProductUpdateView>();
-                    services.AddSingleton<CustomerListView>();
-                    services.AddSingleton<CustomerListViewModel>();
-                    services.AddSingleton<AddCustomerView>();
-                    services.AddSingleton<AddCustomerViewModel>();
-                    services.AddSingleton<UpdateCustomerView>();
-                    services.AddSingleton<UpdateCustomerViewModel>();
+                    services.AddTransient<CustomerListView>();
+                    services.AddTransient<CustomerListViewModel>();
+                    services.AddTransient<AddCustomerView>();
+                    services.AddTransient<AddCustomerViewModel>();
+                    services.AddTransient<UpdateCustomerView>();
+                    services.AddTransient<UpdateCustomerViewModel>();
+                    services.AddTransient<OrderListView>();
+                    services.AddTransient<OrderListViewModel>();
                     services.AddScoped<DataTransferService>();
                     
-                    services.AddSingleton<ObservableCollection<ProductDetail>>();
-                    services.AddSingleton<ObservableCollection<ProductSize>>();
-                    services.AddSingleton<ObservableCollection<Currency>>();
-
-                    services.AddSingleton<ObservableCollection<Customer>>();
+                    services.AddTransient<ObservableCollection<ProductDetail>>();
+                    services.AddTransient<ObservableCollection<OrderDetail>>();
+                    services.AddTransient<ObservableCollection<ProductSize>>();
+                    services.AddTransient<ObservableCollection<Currency>>();
+                    services.AddTransient<ObservableCollection<Customer>>();
 
                     // datacontexts
 
-                    services.AddDbContext<ProductDataContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\productCatalog_database_df.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))),ServiceLifetime.Scoped);
-                    services.AddDbContext<CustomerOrderContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\customer_database_cf.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))), ServiceLifetime.Scoped);
+                    services.AddDbContext<ProductDataContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\productCatalog_database_df.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))));
+                    services.AddDbContext<CustomerOrderContext>(x => x.UseSqlServer(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\projects\OrderSystem\Infrastructure\Data\customer_database_cf.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True", x => x.MigrationsAssembly(nameof(Infrastructure))));
 
                     // repositories
 

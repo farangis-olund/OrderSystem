@@ -19,7 +19,7 @@
         </Grid.ColumnDefinitions>
         <!-- Sidebar -->
         <StackPanel Grid.Column="0" Margin="0,87,0,0">
-            <Button Content="Orders" Height="58" Background="#71639C"  Foreground="Beige" />
+            <Button Content="Orders" Height="58" Background="#71639C"  Foreground="Beige" Command="{Binding NavigateToOrdersListCommand}" />
             <Button Content="Products" Height="58" Background="#71639C"  Foreground="Beige" Command="{Binding NavigateToProductsListCommand}"/>
             <Button x:Name="CustmersButton" Content="Customers" Height="58" Background="#71639C"  Foreground="Beige" Command="{Binding NavigateCustomersListCommand}"/>
         </StackPanel>
@@ -48,6 +48,10 @@
 
                 <DataTemplate DataType="{x:Type viewmodels:UpdateCustomerViewModel}">
                     <views:UpdateCustomerView/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type viewmodels:OrderListViewModel}">
+                    <views:OrderListView/>
                 </DataTemplate>
                 
             </ContentControl.Resources>

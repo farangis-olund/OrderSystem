@@ -10,8 +10,8 @@ namespace Infrastructure.Repositories;
 
 public class ProductImageRepository : BaseRepository<ProductDataContext, ProductImageEntity>
 {
-    public ProductImageRepository(ProductDataContext context, ILogger<ProductImageRepository> logger)
-        : base(context, logger)
+    public ProductImageRepository(ProductDataContext context)
+        : base(context)
     {
 
     }
@@ -28,8 +28,7 @@ public class ProductImageRepository : BaseRepository<ProductDataContext, Product
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entities of type {typeof(ProductImageEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entities of type {typeof(ProductImageEntity).Name}: {ex.Message}");
             return Enumerable.Empty<ProductImageEntity>();
         }
     }
@@ -49,8 +48,7 @@ public class ProductImageRepository : BaseRepository<ProductDataContext, Product
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(ProductImageEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(ProductImageEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }

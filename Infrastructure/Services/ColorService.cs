@@ -9,9 +9,9 @@ namespace Infrastructure.Services;
 public class ColorService
 {
     private readonly ColorRepository _colorRepository;
-    private readonly ILogger<ProductService> _logger;
+    private readonly ILogger<ColorService> _logger;
 
-    public ColorService(ColorRepository colorRepository, ILogger<ProductService> logger)
+    public ColorService(ColorRepository colorRepository, ILogger<ColorService> logger)
     {
         _colorRepository = colorRepository;
         _logger = logger;
@@ -64,7 +64,7 @@ public class ColorService
     }
 
 
-    public async Task<IEnumerable<ColorEntity>> GetAllColorAsync()
+    public async Task<IEnumerable<ColorEntity>> GetAllColorsAsync()
     {
         try
         {
@@ -84,8 +84,15 @@ public class ColorService
     {
         try
         {
-            await _colorRepository.RemoveAsync(b => b.ColorName == colorName);
-            return true;
+            var result = await _colorRepository.GetOneAsync(b => b.ColorName == colorName);
+            if (result != null)
+            {
+                await _colorRepository.RemoveAsync(b => b.ColorName == colorName);
+                return true;
+            }
+            else
+                return false;
+  
         }
         catch (Exception ex)
         {

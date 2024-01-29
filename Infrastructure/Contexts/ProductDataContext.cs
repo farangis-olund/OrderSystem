@@ -34,9 +34,6 @@ public partial class ProductDataContext : DbContext
 
     public virtual DbSet<SizeEntity> SizeEntities { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    => optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\projects\\OrderSystem\\Infrastructure\\Data\\productCatalog_database_df.mdf;Integrated Security=True;Connect Timeout=30;Encrypt=True");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BrandEntity>(entity =>

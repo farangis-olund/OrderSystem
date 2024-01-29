@@ -2,7 +2,6 @@
 using Infrastructure.Contexts;
 using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -10,8 +9,8 @@ namespace Infrastructure.Repositories;
 
 public class PriceRepository : BaseRepository<ProductDataContext, ProductPriceEntity>
 {
-    public PriceRepository(ProductDataContext context, ILogger<PriceRepository> logger)
-        : base(context, logger)
+    public PriceRepository(ProductDataContext context)
+        : base(context)
     {
       
     }
@@ -28,8 +27,7 @@ public class PriceRepository : BaseRepository<ProductDataContext, ProductPriceEn
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entities of type {typeof(ProductPriceEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entities of type {typeof(ProductPriceEntity).Name}: {ex.Message}");
             return Enumerable.Empty<ProductPriceEntity>();
         }
     }
@@ -49,8 +47,7 @@ public class PriceRepository : BaseRepository<ProductDataContext, ProductPriceEn
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(ProductPriceEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(ProductPriceEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }

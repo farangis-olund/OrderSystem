@@ -7,7 +7,7 @@ public class DataTransferService
 {
     public ProductDetail SelectedProductItem { get; set; } = null!;
     public Customer SelectedCustomerItem { get; set; } = null!;
-
+    public OrderDetail SelectedOrderItem { get; set; } = null!;
     public IEnumerable<ProductDetail> ConvertToProductDetails(IEnumerable<ProductVariantEntity> entities)
     {
         return entities.Select(ConvertToProductDetail);
@@ -39,4 +39,24 @@ public class DataTransferService
             Currency = entity.ProductPriceEntities.FirstOrDefault()?.CurrencyCodeNavigation ?? new Currency()
         };
     }
+
+
+    public IEnumerable<OrderDetail> ConvertToOrderDetails(IEnumerable<OrderDetailEntity> entities)
+    {
+        return entities.Select(ConvertToOrderDetail);
+    }
+
+    public OrderDetail ConvertToOrderDetail(OrderDetailEntity entity)
+    {
+        return new OrderDetail
+        {
+           CustomerOrderId = entity.CustomerOrderId,
+           ProductVariantId = entity.ProductVariantId,
+           Quantity = entity.Quantity,
+           CustomerOrder = entity.CustomerOrder,
+           Customer = entity.CustomerOrder?.Customer!
+
+        };
+    }
+
 }

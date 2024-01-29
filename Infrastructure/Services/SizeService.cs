@@ -4,7 +4,7 @@ using Infrastructure.Entities;
 using Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Drawing;
+
 
 namespace Infrastructure.Services;
 
@@ -114,10 +114,10 @@ public class SizeService
     {
         try
         {
-            var existingSize = await _sizeRepository.ExistsAsync(s => s.SizeType == size.SizeType &&
+            var existingSize = await _sizeRepository.GetOneAsync(s => s.SizeType == size.SizeType &&
                                                                 s.SizeValue == size.SizeValue &&
                                                                 s.AgeGroup == size.AgeGroup);
-            if (existingSize)
+            if (existingSize != null)
             {
                  return await _sizeRepository.UpdateAsync(s => s.Id == size.Id, size);
             }
@@ -136,21 +136,25 @@ public class SizeService
     {
         try
         {
+            var sizeToDelete = await _sizeRepository.GetOneAsync(s =>
+                s.SizeType == productSize.SizeType &&
+                s.SizeValue == productSize.SizeValue &&
+                s.AgeGroup == productSize.AgeGroup);
 
-            var existingSize = await _sizeRepository.ExistsAsync(x => x.Equals(productSize));
-
-            if (existingSize)
+            if (sizeToDelete != null)
             {
-                await _sizeRepository.RemoveAsync(productSize);
+                await _sizeRepository.RemoveAsync(sizeToDelete);
                 return true;
             }
             else
+            {
                 return false;
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error in adding size: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            _logger.LogError($"Error deleting size: {ex.Message}");
+            Debug.WriteLine($"Error deleting size: {ex.Message}");
             return false;
         }
     }

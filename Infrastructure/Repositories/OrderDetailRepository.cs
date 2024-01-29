@@ -10,8 +10,8 @@ namespace Infrastructure.Repositories;
 
 public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderDetailEntity>
 {
-    public OrderDetailRepository(CustomerOrderContext context, ILogger<OrderDetailRepository> logger)
-        : base(context, logger)
+    public OrderDetailRepository(CustomerOrderContext context)
+        : base(context)
     {
 
     }
@@ -20,17 +20,15 @@ public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderD
     {
         try
         {
-            List<OrderDetailEntity> productList = await _context.OrderDetails
-            .Include(x => x.CustomerOrder)
-            .Include (s => s.ProductVariant)
+            List<OrderDetailEntity> orderList = await _context.OrderDetails
+            .Include(i => i.CustomerOrder).ThenInclude(i => i.Customer)
             .ToListAsync();
 
-            return productList;
+            return orderList;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entities of type {typeof(OrderDetailEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entities of type {typeof(OrderDetailEntity).Name}: {ex.Message}");
             return Enumerable.Empty<OrderDetailEntity>();
         }
 
@@ -41,8 +39,7 @@ public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderD
         try
         {
             var entity = await _context.OrderDetails
-                .Include(x => x.CustomerOrder)
-                .Include(s => s.ProductVariant)
+                .Include(i => i.CustomerOrder).ThenInclude(i => i.Customer)
                 .FirstOrDefaultAsync(predicate);
 
             entity = await createIfNotFound.Invoke();
@@ -52,8 +49,7 @@ public class OrderDetailRepository : BaseRepository<CustomerOrderContext, OrderD
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(OrderDetailEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(OrderDetailEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }

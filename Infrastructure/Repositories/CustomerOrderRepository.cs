@@ -10,8 +10,8 @@ namespace Infrastructure.Repositories;
 
 public class CustomerOrderRepository : BaseRepository<CustomerOrderContext, CustomerOrderEntity>
 {
-    public CustomerOrderRepository(CustomerOrderContext context, ILogger<CustomerOrderRepository> logger)
-        : base(context, logger)
+    public CustomerOrderRepository(CustomerOrderContext context)
+        : base(context)
     {
 
     }
@@ -28,8 +28,7 @@ public class CustomerOrderRepository : BaseRepository<CustomerOrderContext, Cust
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entities of type {typeof(CustomerOrderEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entities of type {typeof(CustomerOrderEntity).Name}: {ex.Message}");
             return Enumerable.Empty<CustomerOrderEntity>();
         }
 
@@ -50,8 +49,7 @@ public class CustomerOrderRepository : BaseRepository<CustomerOrderContext, Cust
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(CustomerOrderEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(CustomerOrderEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }

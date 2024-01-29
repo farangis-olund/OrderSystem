@@ -40,4 +40,11 @@ public partial class MainViewModel : ObservableObject
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<CustomerListViewModel>();
     }
+
+    [RelayCommand]
+    private void NavigateToOrdersList()
+    {
+        var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+        mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<OrderListViewModel>();
+    }
 }

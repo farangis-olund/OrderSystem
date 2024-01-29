@@ -8,9 +8,9 @@ namespace Infrastructure.Services;
 public class BrandService
 {
     private readonly BrandRepository _brandRepository;
-    private readonly ILogger<ProductService> _logger;
+    private readonly ILogger<BrandService> _logger;
 
-    public BrandService(BrandRepository brandRepository, ILogger<ProductService> logger)
+    public BrandService(BrandRepository brandRepository, ILogger<BrandService> logger)
     {
         _brandRepository = brandRepository;
         _logger = logger;
@@ -81,8 +81,16 @@ public class BrandService
     {
         try
         {
-            await _brandRepository.RemoveAsync(b => b.BrandName == brandName);
-            return true;
+            var brandToRemove = await _brandRepository.GetOneAsync(b => b.BrandName == brandName);
+            if (brandToRemove != null)
+            {
+                await _brandRepository.RemoveAsync(brandToRemove);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         catch (Exception ex)
         {

@@ -9,8 +9,8 @@ namespace Infrastructure.Repositories;
 
 public class ProductVariantRepository : BaseRepository<ProductDataContext, ProductVariantEntity>
 {
-    public ProductVariantRepository(ProductDataContext context, ILogger<ProductVariantRepository> logger)
-        : base(context, logger)
+    public ProductVariantRepository(ProductDataContext context)
+        : base(context)
     {
 
     }
@@ -35,8 +35,7 @@ public class ProductVariantRepository : BaseRepository<ProductDataContext, Produ
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entities of type {typeof(ProductVariantEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entities of type {typeof(ProductVariantEntity).Name}: {ex.Message}");
             return Enumerable.Empty<ProductVariantEntity>();
         }
     }
@@ -57,8 +56,7 @@ public class ProductVariantRepository : BaseRepository<ProductDataContext, Produ
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(ProductVariantEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(ProductVariantEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }

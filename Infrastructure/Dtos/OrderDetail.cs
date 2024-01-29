@@ -8,9 +8,9 @@ namespace Infrastructure.Dtos
         public int CustomerOrderId { get; set; }
         public int ProductVariantId { get; set; }
         public int Quantity { get; set; }
-
+        public Customer Customer { get; set; } = null!;
         public CustomerOrder CustomerOrder { get; set; } = null!;
-        public ProductVariant ProductVariant { get; set; } = null!;
+        public ProductDetail ProductDetail { get; set; } = null!;
 
         public static implicit operator OrderDetail(OrderDetailEntity entity)
         {
@@ -18,8 +18,8 @@ namespace Infrastructure.Dtos
             {
                 CustomerOrderId = entity.CustomerOrderId,
                 ProductVariantId = entity.ProductVariantId,
-                Quantity = entity.Quantity
-                
+                Quantity = entity.Quantity,
+                CustomerOrder = entity.CustomerOrder
             };
         }
 

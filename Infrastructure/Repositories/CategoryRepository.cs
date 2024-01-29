@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories;
 
 public class CategoryRepository : BaseRepository<ProductDataContext, CategoryEntity>
 {
-    public CategoryRepository(ProductDataContext context, ILogger<BaseRepository<ProductDataContext, CategoryEntity>> logger) : base(context, logger)
+    public CategoryRepository(ProductDataContext context) : base(context)
     {
     }
 

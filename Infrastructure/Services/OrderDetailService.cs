@@ -24,13 +24,13 @@ namespace Infrastructure.Services
             _logger = logger;
         }
 
-        public async Task<OrderDetailEntity> AddOrderDetailAsync(OrderDetailEntity orderDetail)
+        public async Task<OrderDetail> AddOrderDetailAsync(OrderDetail orderDetail)
         {
             try
             {
                 var existingCustomerOrder = await _customerOrderService.AddCustomerOrderAsync(orderDetail.CustomerOrder);
 
-                var existingProductVariant = await _productVariantService.AddProductVariantAsync(orderDetail.ProductVariant);
+                var existingProductVariant = await _productVariantService.AddProductVariantAsync(orderDetail.ProductDetail);
                 
                 if(existingCustomerOrder != null &&  existingProductVariant != null)
                 {
@@ -40,14 +40,17 @@ namespace Infrastructure.Services
 
                     if (!orderDetailExists)
                     {
-                        var newOrderDetail = new OrderDetailEntity
+                        var newOrderDetailEntity = new OrderDetailEntity
                         {
                             CustomerOrderId = existingCustomerOrder.Id,
                             ProductVariantId = existingProductVariant.Id,
-                            Quantity = orderDetail.Quantity
+                            Quantity = orderDetail.Quantity,
+                            CustomerOrder = existingCustomerOrder,
+                            ProductVariant = existingProductVariant
+
                         };
 
-                        return await _orderDetailRepository.AddAsync(newOrderDetail);
+                        return await _orderDetailRepository.AddAsync(newOrderDetailEntity);
                     }
                 }  
                 

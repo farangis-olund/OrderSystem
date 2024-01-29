@@ -8,8 +8,8 @@ namespace Infrastructure.Repositories;
 
 public class ImageRepository : BaseRepository<ProductDataContext, ImageEntity>
 {
-    public ImageRepository(ProductDataContext context, ILogger<ImageRepository> logger)
-        : base(context, logger)
+    public ImageRepository(ProductDataContext context)
+        : base(context)
     {
 
     }

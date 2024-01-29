@@ -2,7 +2,6 @@
 using Infrastructure.Contexts;
 using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -11,8 +10,8 @@ namespace Infrastructure.Repositories;
 public class ProductRepository : BaseRepository<ProductDataContext, ProductEntity>
 {
     new private readonly ProductDataContext _context;
-    public ProductRepository(ProductDataContext context, ILogger<BaseRepository<ProductDataContext, ProductEntity>> logger) 
-        : base(context, logger)
+    public ProductRepository(ProductDataContext context) 
+        : base(context)
     {
         _context = context;
     }
@@ -30,8 +29,7 @@ public class ProductRepository : BaseRepository<ProductDataContext, ProductEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entities of type {typeof(ProductEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entities of type {typeof(ProductEntity).Name}: {ex.Message}");
             return Enumerable.Empty<ProductEntity>();
         }
        
@@ -54,8 +52,7 @@ public class ProductRepository : BaseRepository<ProductDataContext, ProductEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(ProductEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(ProductEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }

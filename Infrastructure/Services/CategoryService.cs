@@ -9,9 +9,9 @@ namespace Infrastructure.Services;
 public class CategoryService
 {
     private readonly CategoryRepository _categoryRepository;
-    private readonly ILogger<ProductService> _logger;
+    private readonly ILogger<CategoryService> _logger;
 
-    public CategoryService(CategoryRepository categoryRepository, ILogger<ProductService> logger)
+    public CategoryService(CategoryRepository categoryRepository, ILogger<CategoryService> logger)
     {
         _categoryRepository = categoryRepository;
         _logger = logger;
@@ -50,7 +50,7 @@ public class CategoryService
     }
 
 
-    public async Task<IEnumerable<CategoryEntity>> GetAllCategoryAsync()
+    public async Task<IEnumerable<CategoryEntity>> GetAllCategoriesAsync()
     {
         try
         {
@@ -83,9 +83,13 @@ public class CategoryService
     {
         try
         {
-            await _categoryRepository.RemoveAsync(b => b.CategoryName == categoryName);
-            return true;
-          
+            var result = await _categoryRepository.GetOneAsync(b => b.CategoryName == categoryName);
+            if (result != null)
+            {
+                await _categoryRepository.RemoveAsync(b => b.CategoryName == categoryName);
+                return true;
+            } else
+                return false;
         }
         catch (Exception ex)
         {

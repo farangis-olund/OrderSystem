@@ -9,9 +9,9 @@ namespace Infrastructure.Services;
 public class ImageService
 {
     private readonly ImageRepository _imageRepository;
-    private readonly ILogger<ProductService> _logger;
+    private readonly ILogger<ImageService> _logger;
 
-    public ImageService(ImageRepository imageRepository, ILogger<ProductService> logger)
+    public ImageService(ImageRepository imageRepository, ILogger<ImageService> logger)
     {
         _imageRepository = imageRepository;
         _logger = logger;
@@ -78,12 +78,18 @@ public class ImageService
         }
     }
 
-    public async Task<bool> DeleteimageAsync(string imageUrl)
+    public async Task<bool> DeleteImageAsync(string imageUrl)
     {
         try
         {
-            await _imageRepository.RemoveAsync(b => b.ImageUrl == imageUrl);
-            return true;
+            var result = await _imageRepository.GetOneAsync(b => b.ImageUrl == imageUrl);
+            if (result != null)
+            {
+                await _imageRepository.RemoveAsync(b => b.ImageUrl == imageUrl);
+                return true;
+            } else
+                return false;
+            
         }
         catch (Exception ex)
         {

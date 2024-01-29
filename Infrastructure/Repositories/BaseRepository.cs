@@ -1,7 +1,5 @@
-﻿using Infrastructure.Entities;
-using Infrastructure.Interfaces;
+﻿using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -11,12 +9,11 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
     where TContext : DbContext where TEntity : class
 {
     protected readonly TContext _context;
-    protected readonly ILogger<BaseRepository<TContext, TEntity>> _logger;
-
-    protected BaseRepository(TContext context, ILogger<BaseRepository<TContext, TEntity>> logger)
+   
+    protected BaseRepository(TContext context)
     {
         _context = context;
-        _logger = logger;
+       
     }
 
     public virtual async Task<TEntity> AddAsync(TEntity entity)
@@ -26,13 +23,12 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
             _context.Set<TEntity>().Add(entity);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Entity of type {typeof(TEntity).Name} added successfully.");
+            Debug.WriteLine($"Entity of type {typeof(TEntity).Name} added successfully: {entity}");
             return entity;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error adding entity of type {typeof(TEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error adding entity of type {typeof(TEntity).Name}: {ex.Message}");
             return null!;
         }
 
@@ -46,8 +42,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entities of type {typeof(TEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entities of type {typeof(TEntity).Name}: {ex.Message}");
             return Enumerable.Empty<TEntity>();
         }
     }
@@ -69,8 +64,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(TEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(TEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }
@@ -89,8 +83,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting entity of type {typeof(TEntity).Name} by id: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error getting entity of type {typeof(TEntity).Name} by id: {ex.Message}");
             return null!;
         }
     }
@@ -107,8 +100,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error updating entity of type {typeof(TEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error updating entity of type {typeof(TEntity).Name}: {ex.Message}");
             return null!;
         }
     }
@@ -120,20 +112,17 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
             var entity = await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
             if (entity == null)
             {
-                _logger.LogWarning($"Entity of type {typeof(TEntity).Name} with data {predicate} not found.");
                 return false;
             }
 
             _context.Set<TEntity>().Remove(entity);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Entity of type {typeof(TEntity).Name} with data {predicate} removed successfully.");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error removing entity of type {typeof(TEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error removing entity of type {typeof(TEntity).Name}: {ex.Message}");
             return false;
         }
     }
@@ -148,8 +137,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error removing entity of type {typeof(TEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error removing entity of type {typeof(TEntity).Name}: {ex.Message}");
             return false;
         }
     }
@@ -162,8 +150,7 @@ public abstract class BaseRepository<TContext, TEntity> : IBaseRepository<TEntit
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error checking existence of entity of type {typeof(TEntity).Name}: {ex.Message}");
-            Debug.WriteLine(ex.Message);
+            Debug.WriteLine($"Error checking existence of entity of type {typeof(TEntity).Name}: {ex.Message}");
             return false;
         }
     }

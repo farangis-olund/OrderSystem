@@ -53,8 +53,9 @@ public partial class ProductListViewModel : ObservableObject
         var products = await _productVariantService.GetAllProductVariantsAsync();
         var newProduct = _dataTransferService.ConvertToProductDetails(products);
         ProductList = new ObservableCollection<ProductDetail>(newProduct);
-        
     }
+
+
     [RelayCommand]
     private async Task RemoveProductAsync(ProductDetail product)
     {
