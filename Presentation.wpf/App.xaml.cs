@@ -40,10 +40,15 @@ namespace Presentation.wpf
                     services.AddTransient<UpdateCustomerViewModel>();
                     services.AddTransient<OrderListView>();
                     services.AddTransient<OrderListViewModel>();
+                    services.AddTransient<OrderDetailsViewModel>();
+                    services.AddTransient<OrderDetailsView>();
+                    services.AddTransient<AddOrderViewModel>();
+                    services.AddTransient<AddOrderView>();
+
                     services.AddScoped<DataTransferService>();
-                    
+
                     services.AddTransient<ObservableCollection<ProductDetail>>();
-                    services.AddTransient<ObservableCollection<OrderDetail>>();
+                    services.AddTransient<ObservableCollection<CustomerOrder>>();
                     services.AddTransient<ObservableCollection<ProductSize>>();
                     services.AddTransient<ObservableCollection<Currency>>();
                     services.AddTransient<ObservableCollection<Customer>>();

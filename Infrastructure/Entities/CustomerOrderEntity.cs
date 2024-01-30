@@ -30,6 +30,7 @@ public class CustomerOrderEntity
     {
         return new CustomerOrderEntity
         {
+            Id = customerOrder.CustomerOrderId,
             TotalAmount = customerOrder.TotalAmount,
             Date = customerOrder.Date,
             CustomerId = customerOrder.CustomerId,

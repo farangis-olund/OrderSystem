@@ -33,7 +33,6 @@
                 <!-- Left Column: Image -->
                 <StackPanel Grid.Column="0" Margin="10">
                     <Image Source="{Binding Product.ImageUrl}" Width="200" Height="150" />
-                    <!-- Add any additional image-related controls or information here -->
                 </StackPanel>
 
                 <!-- Right Column: Product Information -->

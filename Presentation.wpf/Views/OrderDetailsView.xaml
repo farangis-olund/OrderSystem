@@ -1,0 +1,139 @@
+﻿<UserControl x:Class="Presentation.wpf.Views.OrderDetailsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Presentation.wpf.Views"
+             xmlns:views="clr-namespace:Presentation.wpf.Views"
+             xmlns:viewmodels="clr-namespace:Presentation.wpf.ViewModels"
+              d:DataContext="{d:DesignInstance Type=viewmodels:OrderDetailsViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="72"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <TextBlock Text="Sale Managment System"  VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="32" FontWeight="Bold" Margin="70,0,0,0"/>
+                <Button Grid.Column="1" Content="Go to Order List"  HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding NavigateToOrderCommand}" FontWeight="SemiBold" Padding="10,5" BorderThickness="1.5" BorderBrush="#71639C" Background="Transparent"/>
+
+            </Grid>
+
+            <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20,0,0,0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="400"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left Column: -->
+                <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20,0,0,0">
+                    <TextBlock Grid.Row="0" Text="Product's Details" FontSize="16" FontWeight="Bold" />
+
+                    <ScrollViewer Grid.Row="1" Margin="0,25,0,0" HorizontalScrollBarVisibility="Auto">
+
+                        <ListBox ItemsSource="{Binding ProductList}" SelectedItem="{Binding SelectedProduct}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="Black" BorderThickness="1" Margin="5" Width="335" Height="80">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="70"/>
+                                                <ColumnDefinition Width="70"/>
+
+
+                                            </Grid.ColumnDefinitions>
+                                            <!-- Column 1: Product image on the left -->
+                                            <Image Grid.Column="0" Source="{Binding ImageUrl}" Width="100" Height="100" HorizontalAlignment="Left"/>
+
+                                            <!-- Column 2: Product information in the middle -->
+                                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="left">
+                                                <TextBlock>
+                                                 <Run Text="{Binding ProductName}" />
+                                                 <LineBreak />
+                                                 <Run Text="{Binding ArticleNumber}" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Margin="0,0,10,0" VerticalAlignment="Center" HorizontalAlignment="left">
+                                                <TextBlock>
+                                                 <Run Text="{Binding Price, StringFormat={}{0:F2}}" FontWeight="SemiBold"/>
+                                                 <Run Text="{Binding CurrencyCode}" FontWeight="SemiBold"/>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="4" VerticalAlignment="Center" HorizontalAlignment="left">
+                                                <Label Content="Qnt" Foreground="Gray"/>
+                                                <TextBox Text="{Binding OrderQuantity}" Height="20" Padding="7,0,0,0" IsEnabled="False"/>
+                                            </StackPanel>
+
+
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+                </Grid>
+
+
+                <!-- Right Column: Ordert Information -->
+                <Grid Grid.Column="1" Margin="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Order Information" FontSize="20" FontWeight="Bold" Margin="10,0,0,10"/>
+                  
+                    <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" >
+                        <ScrollViewer >
+                            <StackPanel Margin="5">
+
+                                <StackPanel Margin="0,0,0,5" >
+                                    <Label Content="Date of order" Foreground="Gray"/>
+                                    <TextBox Text="{Binding CustomerOrder.Date}" Margin="0,0,0,0" Height="25" IsEnabled="False"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,5" >
+                                    <Label Content="Total Amount" Foreground="Gray"/>
+                                    <TextBox Text="{Binding CustomerOrder.TotalAmount}" Margin="0,0,0,0" Height="25" IsEnabled="False"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,5" >
+                                    <Label Content="Fist Name" Foreground="Gray"/>
+                                    <TextBox Text="{Binding CustomerOrder.Customer.FirstName}" Margin="0,0,0,0" Height="25" IsEnabled="False"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,5">
+                                    <Label Content="Last Name" Foreground="Gray"/>
+                                    <TextBox Text="{Binding CustomerOrder.Customer.LastName}" Margin="0,0,0,0" Height="25" IsEnabled="False"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,5">
+                                    <Label Content="Email" Foreground="Gray"/>
+                                    <TextBox Text="{Binding CustomerOrder.Customer.Email}" Margin="0,0,0,0" Height="25" IsEnabled="False"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,5">
+                                    <Label Content="Phone Number" Foreground="Gray"/>
+                                    <TextBox Text="{Binding CustomerOrder.Customer.PhoneNumber}" Margin="0,0,0,0" Height="25" IsEnabled="False"/>
+                                </StackPanel>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</UserControl>

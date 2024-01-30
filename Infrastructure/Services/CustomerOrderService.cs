@@ -25,23 +25,34 @@ namespace Infrastructure.Services
         {
             try
             {
-                var existingCustomer = await _customerService.GetCustomerAsync(customerOrder.Customer.Email) 
-                    ?? await _customerService.AddCustomerAsync(customerOrder.Customer);
+                var existingCustomer = await _customerService.GetCustomerAsync(customerOrder.CustomerEmail) 
+                    ?? await _customerService.AddCustomerAsync(
+                        new CustomerEntity { LastName = customerOrder.CustomerLastName, 
+                                       FirstName = customerOrder.CustomerFirstName,
+                                       Email = customerOrder.CustomerEmail,
+                                       PhoneNumber =customerOrder.CustomerPhoneNumber});
 
-                if (existingCustomer == null)
-                {
-                    _logger.LogError("Failed to add or retrieve the customer.");
-                    return null!;
-                }
-
-                var newCustomerOrder = new CustomerOrderEntity
+                return await _customerOrderRepository.AddAsync(new CustomerOrderEntity
                 {
                     TotalAmount = customerOrder.TotalAmount,
                     Date = customerOrder.Date,
                     CustomerId = existingCustomer.Id
-                };
-                    
-                return await _customerOrderRepository.AddAsync(newCustomerOrder);
+                });
+              
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in adding customer order: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<CustomerOrderEntity> GetCustomerOrderAsync(CustomerOrder customerOrder)
+        {
+            try
+            {
+                return await _customerOrderRepository.GetOneAsync(co => co.Id == customerOrder.CustomerOrderId);
             }
             catch (Exception ex)
             {
@@ -107,6 +118,28 @@ namespace Infrastructure.Services
                 }
                 
                 return existingCustomerOrder;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in adding customer order: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteCustomerOrderByIdAsync(int id)
+        {
+            try
+            {
+
+                var existingCustomerOrder = await _customerOrderRepository.GetOneAsync(x => x.Id == id);
+
+                if (existingCustomerOrder != null)
+                {
+                    await _customerOrderRepository.RemoveAsync(existingCustomerOrder);
+                }
+
+                return true;
             }
             catch (Exception ex)
             {

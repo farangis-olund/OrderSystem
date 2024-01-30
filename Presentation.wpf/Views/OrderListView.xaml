@@ -27,7 +27,7 @@
             <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="20,0,0,0">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
 
-                    <ListBox ItemsSource="{Binding OrderList}" SelectedItem="{Binding SelectedOrder}">
+                    <ListBox ItemsSource="{Binding OrderList}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="Black" BorderThickness="1" Margin="5" Width="560" Height="80">
@@ -50,14 +50,14 @@
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="left">
                                             <TextBlock>
-                                                <Run Text="{Binding CustomerOrder.Date}"/>
+                                                <Run Text="{Binding Date}"/>
                                                 <Run Text="     "/>
-                                                <Run Text="{Binding CustomerOrder.TotalAmount}" FontWeight="SemiBold"/>
+                                                <Run Text="{Binding TotalAmount}" FontWeight="SemiBold"/>
                                             </TextBlock>
                                         </StackPanel>
                                         <!-- Column 3: OrderButton on the right -->
                                         <Button Grid.Column="2" Content="Detail" Width="60" Height="30" 
-                                        Command="{Binding DataContext.NavigateToUpdateCommand, 
+                                        Command="{Binding DataContext.NavigateToDetailCommand, 
                                         RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
                                         CommandParameter="{Binding}"  Margin="5" Padding="2"/>
                                         <Button Grid.Column="3" Content="Delete" Width="60" Height="30" 

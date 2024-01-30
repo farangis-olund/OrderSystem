@@ -7,7 +7,7 @@ public class DataTransferService
 {
     public ProductDetail SelectedProductItem { get; set; } = null!;
     public Customer SelectedCustomerItem { get; set; } = null!;
-    public OrderDetail SelectedOrderItem { get; set; } = null!;
+    public CustomerOrder SelectedOrderItem { get; set; } = null!;
     public IEnumerable<ProductDetail> ConvertToProductDetails(IEnumerable<ProductVariantEntity> entities)
     {
         return entities.Select(ConvertToProductDetail);
@@ -18,6 +18,7 @@ public class DataTransferService
         return new ProductDetail
         {
             ArticleNumber = entity.ArticleNumber,
+            ProductVariantId = entity.Id,
             Quantity = entity.Quantity,
             ProductName = entity.ArticleNumberNavigation.ProductName,
             ImageUrl = entity.ProductImageEntities.Select(pi => pi.Image?.ImageUrl).FirstOrDefault()!,
@@ -34,27 +35,27 @@ public class DataTransferService
             Product = entity.ArticleNumberNavigation,
             Brand = entity.ArticleNumberNavigation?.Brand!,
             Category = entity.ArticleNumberNavigation?.Category!,
-            ProductImages = entity.ProductImageEntities.Select(pi => (ProductImage)pi).ToList() ?? new List<ProductImage>(),
+            ProductImages = entity.ProductImageEntities.Select(pi => (ProductImage)pi).ToList() ?? [],
             ProductPrice = entity.ProductPriceEntities.FirstOrDefault() ?? new ProductPrice(),
             Currency = entity.ProductPriceEntities.FirstOrDefault()?.CurrencyCodeNavigation ?? new Currency()
         };
     }
 
 
-    public IEnumerable<OrderDetail> ConvertToOrderDetails(IEnumerable<OrderDetailEntity> entities)
+    public static IEnumerable<CustomerOrder> ConvertToOrderDetails(IEnumerable<CustomerOrderEntity> entities)
     {
-        return entities.Select(ConvertToOrderDetail);
+        return entities.Select(ConvertToCustomerOrder);
     }
 
-    public OrderDetail ConvertToOrderDetail(OrderDetailEntity entity)
+    public static CustomerOrder ConvertToCustomerOrder(CustomerOrderEntity entity)
     {
-        return new OrderDetail
+        return new CustomerOrder
         {
-           CustomerOrderId = entity.CustomerOrderId,
-           ProductVariantId = entity.ProductVariantId,
-           Quantity = entity.Quantity,
-           CustomerOrder = entity.CustomerOrder,
-           Customer = entity.CustomerOrder?.Customer!
+            CustomerOrderId = entity.Id,
+            CustomerId = entity.CustomerId,
+            Date = entity.Date,
+            TotalAmount = entity.TotalAmount,
+            Customer = entity.Customer
 
         };
     }

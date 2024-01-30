@@ -34,7 +34,8 @@ namespace Infrastructure.Dtos
         public Category Category { get; set; } = null!;
         public List<ProductImage> ProductImages { get; set; } = null!;
         public Currency Currency { get; set; } = null!;
-
+        public  bool Selected { get; set; }
+        public int OrderQuantity { get; set; }
 
         public static implicit operator ProductDetail(ProductVariantEntity entity)
         {

@@ -12,31 +12,38 @@ namespace Presentation.wpf.ViewModels
     public partial class OrderListViewModel : ObservableObject
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly CustomerOrderService _customerOrderService;
         private readonly OrderDetailService _orderDetailService;
         private readonly DataTransferService _transferService;
 
         public OrderListViewModel(IServiceProvider serviceProvider,
+                                    CustomerOrderService customerOrderService,
                                     OrderDetailService orderDetailService,
-                                    ObservableCollection<OrderDetail> orderList,
+                                    ObservableCollection<CustomerOrder> orderList,
                                     DataTransferService transferService)
         {
             
             _serviceProvider = serviceProvider;
+            _customerOrderService = customerOrderService;
             _orderDetailService = orderDetailService;
             _orderList = orderList;
+           
             _transferService = transferService;
             _ = LoadOrdersAsync();
         }
 
         [ObservableProperty]
-        private ObservableCollection<OrderDetail> _orderList;
+        private ObservableCollection<CustomerOrder> _orderList;
+
+       
 
         [RelayCommand]
-        private async Task RemoveOrderAsync(OrderDetail order)
+        private async Task RemoveOrderAsync(CustomerOrder order)
         {
             if (order != null)
             {
-                await _orderDetailService.DeleteOrderDetailAsync(order);
+                await _orderDetailService.DeleteOrderDetailByOrderIdAsync(order.CustomerOrderId);
+                await _customerOrderService.DeleteCustomerOrderByIdAsync(order.CustomerOrderId);
             }
             _ = LoadOrdersAsync();
         }
@@ -45,26 +52,25 @@ namespace Presentation.wpf.ViewModels
         private void NavigateToAddOrder()
         {
             var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-            mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<AddCustomerViewModel>();
+            mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<AddOrderViewModel>();
         }
 
         [RelayCommand]
-        private void NavigateToUpdate(OrderDetail order)
+        private void NavigateToDetail(CustomerOrder order)
         {
             if (order != null)
             {
                 _transferService.SelectedOrderItem = order;
                 var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-                mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<UpdateCustomerViewModel>();
+                mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<OrderDetailsViewModel>();
             }
         }
         public async Task LoadOrdersAsync()
         {
             OrderList.Clear();
-
-            var orders = await _orderDetailService.GetAllOrderDetailsAsync();
-            var newProduct = _transferService.ConvertToOrderDetails(orders);
-            OrderList = new ObservableCollection<OrderDetail>(newProduct);
+            var orders = await _customerOrderService.GetAllCustomerOrdersAsync();
+            var newOrder = DataTransferService.ConvertToOrderDetails(orders);
+            OrderList = new ObservableCollection<CustomerOrder>(newOrder);
         }
     }
 }

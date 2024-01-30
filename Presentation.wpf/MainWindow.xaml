@@ -9,7 +9,7 @@
         d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
         mc:Ignorable="d"
         Title="OrderSystem" Height="450" Width="800"
-        WindowStartupLocation="CenterScreen" Background="BlanchedAlmond">
+        WindowStartupLocation="CenterScreen" Background="#F5E8DA">
 
     <Grid>
        
@@ -53,7 +53,15 @@
                 <DataTemplate DataType="{x:Type viewmodels:OrderListViewModel}">
                     <views:OrderListView/>
                 </DataTemplate>
-                
+
+                <DataTemplate DataType="{x:Type viewmodels:AddOrderViewModel}">
+                    <views:AddOrderView/>
+                </DataTemplate>
+
+                <DataTemplate DataType="{x:Type viewmodels:OrderDetailsViewModel}">
+                    <views:OrderDetailsView/>
+                </DataTemplate>
+
             </ContentControl.Resources>
         </ContentControl>
     </Grid>

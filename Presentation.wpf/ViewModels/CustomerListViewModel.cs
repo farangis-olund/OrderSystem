@@ -37,15 +37,6 @@ public partial class CustomerListViewModel : ObservableObject
     private Customer _selectedCustomer;
 
 
-    public async Task LoadCustomersAsync()
-    {
-        CustomerList.Clear();
-
-        var customers = await _customerService.GetAllCustomersAsync();
-               
-        CustomerList = new ObservableCollection<Customer>(customers);
-
-    }
     [RelayCommand]
     private async Task RemoveCustomerAsync(Customer customer)
     {
@@ -73,6 +64,16 @@ public partial class CustomerListViewModel : ObservableObject
             var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
             mainViewModel.CurrentViewModel = _serviceProvider.GetRequiredService<UpdateCustomerViewModel>();
         }
+    }
+
+        public async Task LoadCustomersAsync()
+    {
+        CustomerList.Clear();
+
+        var customers = await _customerService.GetAllCustomersAsync();
+
+        CustomerList = new ObservableCollection<Customer>(customers);
+
     }
 
 }

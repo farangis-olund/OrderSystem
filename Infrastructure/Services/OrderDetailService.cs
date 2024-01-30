@@ -28,31 +28,23 @@ namespace Infrastructure.Services
         {
             try
             {
-                var existingCustomerOrder = await _customerOrderService.AddCustomerOrderAsync(orderDetail.CustomerOrder);
+                var orderDetailExists = await _orderDetailRepository.ExistsAsync(
+                        od => od.CustomerOrderId == orderDetail.CustomerOrderId &&
+                        od.ProductVariantId == orderDetail.ProductVariantId);
 
-                var existingProductVariant = await _productVariantService.AddProductVariantAsync(orderDetail.ProductDetail);
-                
-                if(existingCustomerOrder != null &&  existingProductVariant != null)
+                if (!orderDetailExists)
                 {
-                    var orderDetailExists = await _orderDetailRepository.ExistsAsync(
-                            od => od.CustomerOrderId == existingCustomerOrder.Id &&
-                            od.ProductVariantId == existingProductVariant.Id);
-
-                    if (!orderDetailExists)
+                    var newOrderDetailEntity = new OrderDetailEntity
                     {
-                        var newOrderDetailEntity = new OrderDetailEntity
-                        {
-                            CustomerOrderId = existingCustomerOrder.Id,
-                            ProductVariantId = existingProductVariant.Id,
-                            Quantity = orderDetail.Quantity,
-                            CustomerOrder = existingCustomerOrder,
-                            ProductVariant = existingProductVariant
+                        CustomerOrderId = orderDetail.CustomerOrderId,
+                        ProductVariantId = orderDetail.ProductVariantId,
+                        Quantity = orderDetail.Quantity
+                                                  
+                    };
 
-                        };
-
-                        return await _orderDetailRepository.AddAsync(newOrderDetailEntity);
-                    }
-                }  
+                    return await _orderDetailRepository.AddAsync(newOrderDetailEntity);
+                }
+                  
                 
                 return null!;
             }
@@ -70,6 +62,21 @@ namespace Infrastructure.Services
             try
             {
                 return await _orderDetailRepository.GetOneAsync(x => x.OrderDetailId == orderDetail.OrderDetailId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in geting Order detail: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return null!;
+            }
+        }
+
+        public async Task<OrderDetail> GetOrderDetailByCustomerOrderIdAsync(int customerOrderId)
+        {
+
+            try
+            {
+                return await _orderDetailRepository.GetOneAsync(x => x.CustomerOrderId == customerOrderId);
             }
             catch (Exception ex)
             {
@@ -135,5 +142,25 @@ namespace Infrastructure.Services
             }
         }
 
+        public async Task<bool> DeleteOrderDetailByOrderIdAsync(int orderId)
+        {
+            try
+            {
+                var deleteOrderDetail = await _orderDetailRepository.GetOneAsync(x => x.CustomerOrderId == orderId);
+                if (deleteOrderDetail != null)
+                {
+                    await _orderDetailRepository.RemoveAsync(deleteOrderDetail);
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in deleting Order detail: {ex.Message}");
+                Debug.WriteLine(ex.Message);
+                return false;
+            }
+        }
     }
 }
