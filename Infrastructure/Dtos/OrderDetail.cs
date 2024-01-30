@@ -5,6 +5,7 @@ namespace Infrastructure.Dtos
 {
     public class OrderDetail
     {
+        public int OrderDetailId { get; set; }
         public int CustomerOrderId { get; set; }
         public int ProductVariantId { get; set; }
         public int Quantity { get; set; }

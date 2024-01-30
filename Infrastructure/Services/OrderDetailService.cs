@@ -28,25 +28,31 @@ namespace Infrastructure.Services
         {
             try
             {
-                var orderDetailExists = await _orderDetailRepository.ExistsAsync(
+                var orderDetailExists = await _orderDetailRepository.GetOneAsync(
                         od => od.CustomerOrderId == orderDetail.CustomerOrderId &&
                         od.ProductVariantId == orderDetail.ProductVariantId);
 
-                if (!orderDetailExists)
+                if (orderDetailExists != null)
                 {
-                    var newOrderDetailEntity = new OrderDetailEntity
-                    {
-                        CustomerOrderId = orderDetail.CustomerOrderId,
-                        ProductVariantId = orderDetail.ProductVariantId,
-                        Quantity = orderDetail.Quantity
-                                                  
-                    };
-
-                    return await _orderDetailRepository.AddAsync(newOrderDetailEntity);
+                    return null!;
                 }
-                  
+                var newOrderDetailEntity = new OrderDetailEntity
+                {
+                    CustomerOrderId = orderDetail.CustomerOrderId,
+                    ProductVariantId = orderDetail.ProductVariantId,
+                    Quantity = orderDetail.Quantity
+
+                };
+
+                var orderDetailEntity = await _orderDetailRepository.AddAsync(newOrderDetailEntity);
+                return new OrderDetail
+                {
+                    OrderDetailId = orderDetailEntity.OrderDetailId,
+                    CustomerOrderId = orderDetailEntity.CustomerOrderId,
+                    ProductVariantId = orderDetailEntity.ProductVariantId,
+                    Quantity = orderDetailEntity.Quantity
+                };
                 
-                return null!;
             }
             catch (Exception ex)
             {
@@ -106,7 +112,7 @@ namespace Infrastructure.Services
         {
             try
             {
-                if (await _orderDetailRepository.ExistsAsync(x => x.OrderDetailId == orderDetail.OrderDetailId))
+                if (await _orderDetailRepository.GetOneAsync(x => x.OrderDetailId == orderDetail.OrderDetailId) != null)
                 {
                     return await _orderDetailRepository.UpdateAsync(x => x.OrderDetailId == orderDetail.OrderDetailId, orderDetail);
                 }
@@ -126,9 +132,10 @@ namespace Infrastructure.Services
         {
             try
             {
-                if (await _orderDetailRepository.ExistsAsync(x => x.Equals(orderDetail)))
+                var deleteOrderDetailEntity = await _orderDetailRepository.GetOneAsync(x => x.OrderDetailId == orderDetail.OrderDetailId);
+                if (deleteOrderDetailEntity != null)
                 {
-                    await _orderDetailRepository.RemoveAsync(orderDetail);
+                    await _orderDetailRepository.RemoveAsync(deleteOrderDetailEntity);
                     return true;
                 }
 

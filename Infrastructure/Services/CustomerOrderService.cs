@@ -110,14 +110,15 @@ namespace Infrastructure.Services
             try
             {
               
-                var existingCustomerOrder = await _customerOrderRepository.ExistsAsync(x => x.Equals(customerOrder));
+                var existingCustomerOrder = await _customerOrderRepository.GetOneAsync(x => x.Id == customerOrder.CustomerOrderId);
 
-                if (existingCustomerOrder)
+                if (existingCustomerOrder !=null)
                 {
-                    await _customerOrderRepository.RemoveAsync(customerOrder);
+                    await _customerOrderRepository.RemoveAsync(existingCustomerOrder);
+                    return true;
                 }
+                return false;
                 
-                return existingCustomerOrder;
             }
             catch (Exception ex)
             {

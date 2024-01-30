@@ -188,7 +188,6 @@ namespace Infrastructure.Tests.Services.Tests
                 var existingProduct = _products.AsQueryable().FirstOrDefault(predicate.Compile());
                 if (existingProduct != null)
                 {
-                    // Update properties of existing product
                     existingProduct.ArticleNumber = entity.ArticleNumber;
                     existingProduct.ProductName = entity.ProductName;
                     existingProduct.Material = entity.Material;

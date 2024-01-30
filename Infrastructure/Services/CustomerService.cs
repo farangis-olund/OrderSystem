@@ -21,9 +21,9 @@ public class CustomerService
     {
         try
         {
-            var existingCustomer = await _customerRepository.ExistsAsync(c => c.Email == customer.Email);
+            var existingCustomer = await _customerRepository.GetOneAsync(c => c.Email == customer.Email);
 
-            if (existingCustomer)
+            if (existingCustomer != null)
             {
                 return null!;
             }
@@ -105,11 +105,12 @@ public class CustomerService
     {
         try
         {
-            var existingCustomer = await _customerRepository.ExistsAsync(x => x.Email == email);
+            var existingCustomer = await _customerRepository.GetOneAsync(x => x.Email == email);
 
-            if (existingCustomer)
+            if (existingCustomer != null)
             {
-                return await _customerRepository.RemoveAsync(c => c.Email== email);
+                await _customerRepository.RemoveAsync(c => c.Email== email);
+                return true;
             }
 
             return false;
