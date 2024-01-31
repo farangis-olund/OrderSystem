@@ -5,6 +5,7 @@ using Infrastructure.Dtos;
 using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.wpf.Services;
+using Shared.Utils;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -17,13 +18,13 @@ public partial class AddOrderViewModel : ObservableObject
     private readonly CustomerOrderService _customerOrderService;
     private readonly OrderDetailService _orderDetailService;
     private readonly ProductVariantService _productVariantService;
-    private readonly DataTransferService _dataTransferService;
+    private readonly DtoConverter _dtoConverter;
     public AddOrderViewModel(IServiceProvider serviceProvider,
                                     CustomerOrderService customerOrderService,    
                                     OrderDetailService orderDetailService,
                                     ObservableCollection<ProductDetail> productList,
                                     ProductVariantService productVariantService,
-                                    DataTransferService dataTransferService,
+                                    DtoConverter dtoConverter,
                                     ProductDetail selectedProduct)
     {
 
@@ -32,7 +33,7 @@ public partial class AddOrderViewModel : ObservableObject
         _orderDetailService = orderDetailService;
         _productVariantService = productVariantService;
         _productList = productList;
-        _dataTransferService = dataTransferService;
+        _dtoConverter = dtoConverter;
         _selectedProduct = selectedProduct;
 
         _ = LoadProductsAsync();
@@ -89,7 +90,6 @@ public partial class AddOrderViewModel : ObservableObject
             
             await _orderDetailService.AddOrderDetailAsync(Order);
         }
-       
         
     }
 
@@ -98,7 +98,7 @@ public partial class AddOrderViewModel : ObservableObject
         ProductList.Clear();
 
         var products = await _productVariantService.GetAllProductVariantsAsync();
-        var newProduct = _dataTransferService.ConvertToProductDetails(products);
+        var newProduct = _dtoConverter.ConvertToProductDetails(products);
         ProductList = new ObservableCollection<ProductDetail>(newProduct);
     }
 

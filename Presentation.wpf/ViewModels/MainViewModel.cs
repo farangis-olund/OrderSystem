@@ -9,19 +9,18 @@ namespace Presentation.wpf.ViewModels;
 public partial class MainViewModel : ObservableObject
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly DataTransferService _dataTransferService;
+
+    public MainViewModel(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+
+               
+        NavigateToInitialView();
+    }
 
     [ObservableProperty]
     private ObservableObject _currentViewModel = null!;
 
-    public MainViewModel(IServiceProvider serviceProvider, DataTransferService dataTransferService)
-    {
-        _serviceProvider = serviceProvider;
-        _dataTransferService = dataTransferService;
-               
-        NavigateToInitialView();
-    }
-        
     private void NavigateToInitialView()
     {
         CurrentViewModel = _serviceProvider.GetRequiredService<ProductListViewModel>();

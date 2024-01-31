@@ -48,6 +48,7 @@
                                                 <Run Text="{Binding Customer.Email}" FontWeight="SemiBold"/>
                                             </TextBlock>
                                         </StackPanel>
+                                        
                                         <StackPanel Grid.Column="1" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="left">
                                             <TextBlock>
                                                 <Run Text="{Binding Date}"/>
@@ -56,10 +57,12 @@
                                             </TextBlock>
                                         </StackPanel>
                                         <!-- Column 3: OrderButton on the right -->
+                                        
                                         <Button Grid.Column="2" Content="Detail" Width="60" Height="30" 
                                         Command="{Binding DataContext.NavigateToDetailCommand, 
                                         RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 
                                         CommandParameter="{Binding}"  Margin="5" Padding="2"/>
+                                        
                                         <Button Grid.Column="3" Content="Delete" Width="60" Height="30" 
                                         Command="{Binding DataContext.RemoveOrderCommand, 
                                         RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}" 

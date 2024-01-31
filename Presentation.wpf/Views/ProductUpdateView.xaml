@@ -41,6 +41,7 @@
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+                    
                     <TextBlock Text="Product detail information" FontSize="20" FontWeight="Bold" Margin="35,0,0,10"/>
                     <!-- Right Column: Product Information -->
                     <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="10,0,0,0">

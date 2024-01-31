@@ -5,8 +5,9 @@ using Infrastructure.Dtos;
 using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.wpf.Services;
+using Shared.Utils;
 using System.Collections.ObjectModel;
-using System.Windows;
+
 
 namespace Presentation.wpf.ViewModels
 {
@@ -16,11 +17,13 @@ namespace Presentation.wpf.ViewModels
         private readonly OrderDetailService _orderDetailService;
         private readonly ProductVariantService _productVariantService;
         private readonly DataTransferService _dataTransferService;
+        private readonly DtoConverter _dtoConverter;
         public OrderDetailsViewModel(IServiceProvider serviceProvider,
                                         OrderDetailService orderDetailService,
                                         ObservableCollection<ProductDetail> productList,
                                         ProductVariantService productVariantService,
                                         DataTransferService dataTransferService,
+                                        DtoConverter dtoConverter,
                                         ProductDetail selectedProduct)
         {
 
@@ -29,6 +32,7 @@ namespace Presentation.wpf.ViewModels
             _productVariantService = productVariantService;
             _productList = productList;
             _dataTransferService = dataTransferService;
+            _dtoConverter = dtoConverter;
             _selectedProduct = selectedProduct;
 
             _ = LoadProductsAsync();
@@ -74,7 +78,7 @@ namespace Presentation.wpf.ViewModels
 
             foreach (var selectedItem in selectedItems)
             {
-                ProductList.Add(_dataTransferService.ConvertToProductDetail(selectedItem));
+                ProductList.Add(_dtoConverter.ConvertToProductDetail(selectedItem));
             }
 
             var productDictionary = ProductList.ToDictionary(p => p.ProductVariantId);

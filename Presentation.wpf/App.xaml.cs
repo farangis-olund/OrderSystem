@@ -10,6 +10,7 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using Infrastructure.Dtos;
 using Presentation.wpf.Services;
+using Shared.Utils;
 
 namespace Presentation.wpf
 {
@@ -46,6 +47,7 @@ namespace Presentation.wpf
                     services.AddTransient<AddOrderView>();
 
                     services.AddScoped<DataTransferService>();
+                    services.AddScoped<DtoConverter>();
 
                     services.AddTransient<ObservableCollection<ProductDetail>>();
                     services.AddTransient<ObservableCollection<CustomerOrder>>();

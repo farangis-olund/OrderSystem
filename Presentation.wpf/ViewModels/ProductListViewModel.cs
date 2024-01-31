@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.wpf.Services;
-using Infrastructure.Entities;
+using Shared.Utils;
 
 
 namespace Presentation.wpf.ViewModels;
@@ -17,6 +17,7 @@ public partial class ProductListViewModel : ObservableObject
     private readonly ProductVariantService _productVariantService;
     private readonly ProductImageService _productImageService;
     private readonly PriceService _priceService;
+    private readonly DtoConverter _dtoConverter;
     private readonly DataTransferService _dataTransferService = new() ;
     public ProductListViewModel(IServiceProvider serviceProvider,
                                 ProductService productService,
@@ -25,7 +26,8 @@ public partial class ProductListViewModel : ObservableObject
                                 PriceService priceService,
                                 ProductDetail selectedProduct,
                                 ObservableCollection<ProductDetail> productList,
-                                DataTransferService dataTransferService)
+                                DataTransferService dataTransferService,
+                                DtoConverter dtoConverter)
     {
         _serviceProvider = serviceProvider;
         _productService = productService;
@@ -35,6 +37,7 @@ public partial class ProductListViewModel : ObservableObject
         _productList = productList;
         _dataTransferService = dataTransferService;
         _productVariantService = productVariantService;
+        _dtoConverter = dtoConverter;
 
         _ = LoadProductsAsync();
     }
@@ -51,7 +54,7 @@ public partial class ProductListViewModel : ObservableObject
         ProductList.Clear();
 
         var products = await _productVariantService.GetAllProductVariantsAsync();
-        var newProduct = _dataTransferService.ConvertToProductDetails(products);
+        var newProduct = _dtoConverter.ConvertToProductDetails(products);
         ProductList = new ObservableCollection<ProductDetail>(newProduct);
     }
 

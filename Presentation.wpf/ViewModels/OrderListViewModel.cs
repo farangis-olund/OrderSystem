@@ -5,6 +5,7 @@ using Infrastructure.Dtos;
 using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.wpf.Services;
+using Shared.Utils;
 using System.Collections.ObjectModel;
 
 namespace Presentation.wpf.ViewModels
@@ -15,17 +16,20 @@ namespace Presentation.wpf.ViewModels
         private readonly CustomerOrderService _customerOrderService;
         private readonly OrderDetailService _orderDetailService;
         private readonly DataTransferService _transferService;
+        private readonly DtoConverter _dtoConverter;
 
         public OrderListViewModel(IServiceProvider serviceProvider,
                                     CustomerOrderService customerOrderService,
                                     OrderDetailService orderDetailService,
                                     ObservableCollection<CustomerOrder> orderList,
+                                    DtoConverter dtoConverter,
                                     DataTransferService transferService)
         {
             
             _serviceProvider = serviceProvider;
             _customerOrderService = customerOrderService;
             _orderDetailService = orderDetailService;
+            _dtoConverter = dtoConverter;
             _orderList = orderList;
            
             _transferService = transferService;
@@ -69,7 +73,7 @@ namespace Presentation.wpf.ViewModels
         {
             OrderList.Clear();
             var orders = await _customerOrderService.GetAllCustomerOrdersAsync();
-            var newOrder = DataTransferService.ConvertToOrderDetails(orders);
+            var newOrder = DtoConverter.ConvertToOrderDetails(orders);
             OrderList = new ObservableCollection<CustomerOrder>(newOrder);
         }
     }
