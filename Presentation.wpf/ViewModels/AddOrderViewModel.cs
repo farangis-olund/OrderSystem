@@ -4,7 +4,6 @@ using CommunityToolkit.Mvvm.Input;
 using Infrastructure.Dtos;
 using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Presentation.wpf.Services;
 using Shared.Utils;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -37,14 +36,11 @@ public partial class AddOrderViewModel : ObservableObject
         _selectedProduct = selectedProduct;
 
         _ = LoadProductsAsync();
-        
     }
 
     [ObservableProperty]
     private ObservableCollection<ProductDetail> _productList;
-
-   
-
+    
     [ObservableProperty]
     private Customer _customer = new();
 
@@ -54,8 +50,7 @@ public partial class AddOrderViewModel : ObservableObject
     [RelayCommand]
     private void CreateOrder()
     {
-       
-        NavigateToOrderList();
+       NavigateToOrderList();
     }
 
     private async Task AddOrder()
@@ -110,7 +105,6 @@ public partial class AddOrderViewModel : ObservableObject
         _ = LoadProductsAsync();
         var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
         var orderListViewModel = _serviceProvider.GetRequiredService<OrderListViewModel>();
-        _ = orderListViewModel.LoadOrdersAsync();
         mainViewModel.CurrentViewModel = orderListViewModel;
     }
 }

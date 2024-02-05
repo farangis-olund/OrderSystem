@@ -7,74 +7,28 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Linq.Expressions;
-using static Infrastructure.Tests.Services.Tests.CustomerServiceTests;
-using static Infrastructure.Tests.Services.Tests.ProductServiceTests;
+
 
 namespace Infrastructure.Tests.Services.Tests
 {
     public class OrderDetailServiceTests
     {
         private readonly InMemoryOrderDetailRepository _inMemoryOrderDetailRepository;
-        private readonly InMemoryCustomerOrderRepository _inMemoryCustomerOrderRepository;
-        private readonly InMemoryProductVariantRepository _inMemoryProductVariantRepository;
         private readonly OrderDetailService _orderDetailService;
-        private readonly CustomerService _customerService;
-        private readonly InMemoryCustomerRepository _inMemoryCustomerRepository;
-        private readonly InMemoryColorRepository _inMemoryColorRepository;
-        private readonly InMemorySizeRepository _inMemorySizeRepository;
-        private readonly InMemoryProductRepository _inMemoryProductRepository;
-        private readonly InMemoryBrandRepository _inMemoryBrandRepository;
-        private readonly InMemoryCategoryRepository _inMemoryCategoryRepository;
-        private readonly ILogger<OrderDetailService> _logger;
+       
+         private readonly ILogger<OrderDetailService> _logger;
 
         public OrderDetailServiceTests()
         {
             var context = new CustomerOrderContext(new DbContextOptionsBuilder<CustomerOrderContext>()
               .UseInMemoryDatabase($"{Guid.NewGuid()}")
               .Options);
-
-            var contextProduct = new ProductDataContext(new DbContextOptionsBuilder<ProductDataContext>()
-              .UseInMemoryDatabase($"{Guid.NewGuid()}")
-              .Options);
-
+           
             _inMemoryOrderDetailRepository = new InMemoryOrderDetailRepository(context);
-            
-            _inMemoryCustomerOrderRepository = new InMemoryCustomerOrderRepository(context);
-            
-            _inMemoryProductVariantRepository = new InMemoryProductVariantRepository(contextProduct);
-            
-            _inMemoryCustomerRepository = new InMemoryCustomerRepository(context);
-
-            _inMemoryProductRepository = new InMemoryProductRepository(contextProduct);
-
-            _inMemoryBrandRepository = new InMemoryBrandRepository(contextProduct);
-
-            _inMemoryCategoryRepository = new InMemoryCategoryRepository(contextProduct);
-
-            _inMemoryColorRepository = new InMemoryColorRepository(contextProduct);
-
-            _inMemorySizeRepository = new InMemorySizeRepository(contextProduct);
-
-            _customerService = new CustomerService(_inMemoryCustomerRepository, new Mock<ILogger<CustomerService>>().Object);
-
-            var colorService = new ColorService(_inMemoryColorRepository, new Mock<ILogger<ColorService>>().Object);
-
-            var sizeService = new SizeService(_inMemorySizeRepository, new Mock<ILogger<SizeService>>().Object);
-            
-            var brandService = new BrandService(_inMemoryBrandRepository, new Mock<ILogger<BrandService>>().Object);
-
-            var categoryService = new CategoryService(_inMemoryCategoryRepository, new Mock<ILogger<CategoryService>>().Object);
-
-            var productService = new ProductService (_inMemoryProductRepository, brandService, categoryService, new Mock<ILogger<ProductService>>().Object);
-
-
-            var customerOrderService = new CustomerOrderService(_inMemoryCustomerOrderRepository, _customerService, new Mock<ILogger<CustomerOrderService>>().Object);
-            
-            var productVariantService = new ProductVariantService(_inMemoryProductVariantRepository, productService, sizeService, colorService, new Mock<ILogger<ProductVariantService>>().Object);
-
+                       
             _logger = new Mock<ILogger<OrderDetailService>>().Object;
 
-            _orderDetailService = new OrderDetailService(_inMemoryOrderDetailRepository, customerOrderService, productVariantService, _logger);
+            _orderDetailService = new OrderDetailService(_inMemoryOrderDetailRepository, _logger);
         }
 
         [Fact]
@@ -139,7 +93,7 @@ namespace Infrastructure.Tests.Services.Tests
         public async Task UpdateOrderDetailAsync_ShouldUpdateOrderDetail_WhenOrderDetailExists()
         {
             // Arrange
-            var existingOrderDetail = await _inMemoryOrderDetailRepository.AddAsync(
+            await _inMemoryOrderDetailRepository.AddAsync(
                   new OrderDetailEntity { OrderDetailId = 1, CustomerOrderId = 1, ProductVariantId = 1, Quantity = 10 });
 
 
@@ -181,14 +135,9 @@ namespace Infrastructure.Tests.Services.Tests
        
     }
 
-    public class InMemoryOrderDetailRepository : OrderDetailRepository
+    public class InMemoryOrderDetailRepository(CustomerOrderContext context) : OrderDetailRepository(context)
     {
-        private readonly List<OrderDetailEntity> _orderDetails;
-
-        public InMemoryOrderDetailRepository(CustomerOrderContext context) : base(context)
-        {
-            _orderDetails = new List<OrderDetailEntity>();
-        }
+        private readonly List<OrderDetailEntity> _orderDetails = new List<OrderDetailEntity>();
 
         public override Task<OrderDetailEntity> GetOneAsync(Expression<Func<OrderDetailEntity, bool>> predicate)
         {
@@ -233,56 +182,4 @@ namespace Infrastructure.Tests.Services.Tests
         }
     }
 
-    public class InMemoryProductVariantRepository : ProductVariantRepository
-    {
-        private readonly List<ProductVariantEntity> _productVariants;
-
-        public InMemoryProductVariantRepository(ProductDataContext context) : base(context)
-        {
-            _productVariants = new List<ProductVariantEntity>();
-        }
-
-        public override Task<ProductVariantEntity> GetOneAsync(Expression<Func<ProductVariantEntity, bool>> predicate)
-        {
-            return Task.FromResult(_productVariants.AsQueryable().FirstOrDefault(predicate.Compile())!);
-        }
-
-        public override Task<IEnumerable<ProductVariantEntity>> GetAllAsync()
-        {
-            return Task.FromResult<IEnumerable<ProductVariantEntity>>(_productVariants);
-        }
-
-        public override Task<ProductVariantEntity> AddAsync(ProductVariantEntity entity)
-        {
-            _productVariants.Add(entity);
-            return Task.FromResult(entity);
-        }
-
-        public override Task<ProductVariantEntity> UpdateAsync(Expression<Func<ProductVariantEntity, bool>> predicate, ProductVariantEntity entity)
-        {
-            var existingProductVariant = _productVariants.AsQueryable().FirstOrDefault(predicate.Compile());
-            if (existingProductVariant != null)
-            {
-                existingProductVariant.ArticleNumber = entity.ArticleNumber;
-                existingProductVariant.SizeId = entity.SizeId;
-                existingProductVariant.ColorId = entity.ColorId;
-                existingProductVariant.Quantity = entity.Quantity;
-
-                return Task.FromResult(existingProductVariant);
-            }
-
-            return Task.FromResult<ProductVariantEntity>(null!);
-        }
-
-        public override Task<bool> RemoveAsync(Expression<Func<ProductVariantEntity, bool>> predicate)
-        {
-            var productVariantToRemove = _productVariants.AsQueryable().FirstOrDefault(predicate.Compile());
-            if (productVariantToRemove != null)
-            {
-                _productVariants.Remove(productVariantToRemove);
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
-        }
-    }
 }

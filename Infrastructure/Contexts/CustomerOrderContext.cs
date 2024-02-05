@@ -7,6 +7,7 @@ namespace Infrastructure.Contexts
     {
         public CustomerOrderContext(DbContextOptions<CustomerOrderContext> options) : base(options)
         {
+
         }
 
         public virtual DbSet<CustomerEntity> Customers { get; set; }
@@ -23,6 +24,7 @@ namespace Infrastructure.Contexts
             {
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.CustomerOrders)
+                    .HasForeignKey(d => d.CustomerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CustomerOrder_Customer");
             });

@@ -16,20 +16,18 @@ namespace Presentation.wpf.ViewModels
         private readonly CustomerOrderService _customerOrderService;
         private readonly OrderDetailService _orderDetailService;
         private readonly DataTransferService _transferService;
-        private readonly DtoConverter _dtoConverter;
+     
 
         public OrderListViewModel(IServiceProvider serviceProvider,
                                     CustomerOrderService customerOrderService,
                                     OrderDetailService orderDetailService,
                                     ObservableCollection<CustomerOrder> orderList,
-                                    DtoConverter dtoConverter,
                                     DataTransferService transferService)
         {
             
             _serviceProvider = serviceProvider;
             _customerOrderService = customerOrderService;
             _orderDetailService = orderDetailService;
-            _dtoConverter = dtoConverter;
             _orderList = orderList;
            
             _transferService = transferService;

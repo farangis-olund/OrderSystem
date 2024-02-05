@@ -9,18 +9,12 @@ namespace Infrastructure.Services
     public class OrderDetailService
     {
         private readonly OrderDetailRepository _orderDetailRepository;
-        private readonly CustomerOrderService _customerOrderService;
-        private readonly ProductVariantService _productVariantService;
         private readonly ILogger<OrderDetailService> _logger;
 
         public OrderDetailService(OrderDetailRepository orderDetailRepository, 
-                                  CustomerOrderService customerOrderService,
-                                  ProductVariantService productVariantService,
                                   ILogger<OrderDetailService> logger)
         {
             _orderDetailRepository = orderDetailRepository;
-            _customerOrderService = customerOrderService;
-            _productVariantService = productVariantService;
             _logger = logger;
         }
 

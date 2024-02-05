@@ -45,10 +45,12 @@ namespace Presentation.wpf
                     services.AddTransient<OrderDetailsView>();
                     services.AddTransient<AddOrderViewModel>();
                     services.AddTransient<AddOrderView>();
-
+                    
+                    // Dtos transferService
                     services.AddScoped<DataTransferService>();
                     services.AddScoped<DtoConverter>();
 
+                    // ObservableColection
                     services.AddTransient<ObservableCollection<ProductDetail>>();
                     services.AddTransient<ObservableCollection<CustomerOrder>>();
                     services.AddTransient<ObservableCollection<ProductSize>>();
@@ -79,7 +81,6 @@ namespace Presentation.wpf
                     services.AddSingleton<ProductDetail>();
                     services.AddSingleton<ProductSize>();
                     services.AddSingleton<Currency>();
-
                     services.AddSingleton<Customer>();
 
                     // customerOrders repositories

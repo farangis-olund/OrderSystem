@@ -24,8 +24,6 @@ public partial class UpdateCustomerViewModel : ObservableObject
         _dataTransferService = dataTransferService;
 
         Customer = _dataTransferService.SelectedCustomerItem;
-
-
     }
 
     [ObservableProperty]
