@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Contexts
 {
-    public class CustomerOrderContext : DbContext
+    public partial class CustomerOrderContext : DbContext
     {
         public CustomerOrderContext(DbContextOptions<CustomerOrderContext> options) : base(options)
         {
@@ -25,7 +25,7 @@ namespace Infrastructure.Contexts
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.CustomerOrders)
                     .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_CustomerOrder_Customer");
             });
 
@@ -37,7 +37,8 @@ namespace Infrastructure.Contexts
             {
                 entity.HasOne(c => c.CustomerOrder)
                     .WithMany(z => z.OrderDetails)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasForeignKey(d => d.CustomerOrderId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_OrderDetail_CustomerOrder");
             });
 

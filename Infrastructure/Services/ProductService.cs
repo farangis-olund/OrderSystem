@@ -29,14 +29,15 @@ public class ProductService
     {
         try
         {
-            var brandEntity = await _brandService.AddBrandAsync(product.BrandName);
-            var categoryEntity = await _categoryService.AddCategoryAsync(product.CategoryName);
-
             var existingProduct = await _productRepository.GetOneAsync(p => p.ArticleNumber == product.ArticleNumber);
             if (existingProduct != null)
             {
                 return null!;
             }
+
+            var brandEntity = await _brandService.AddBrandAsync(product.BrandName);
+            var categoryEntity = await _categoryService.AddCategoryAsync(product.CategoryName);
+
             var productEntity = new ProductEntity
             {
                 ArticleNumber = product.ArticleNumber,

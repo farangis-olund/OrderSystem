@@ -6,6 +6,7 @@ using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Presentation.wpf.Services;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Presentation.wpf.ViewModels;
 
@@ -42,7 +43,8 @@ public partial class CustomerListViewModel : ObservableObject
     {
         if (customer != null)
         {
-           await _customerService.DeleteCustomerAsync(customer.Email);
+            await _customerService.DeleteCustomerAsync(customer.Email);
+            
         }
         _ = LoadCustomersAsync();
     }
