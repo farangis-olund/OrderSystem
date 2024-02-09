@@ -75,7 +75,7 @@ namespace Presentation.wpf
                     services.AddScoped<PriceRepository>();
                     services.AddScoped<ProductVariantRepository>();
                     services.AddScoped<SizeRepository>();
-                    
+
                     services.AddSingleton<Product>();
                     services.AddSingleton<ProductVariant>();
                     services.AddSingleton<ProductDetail>();
